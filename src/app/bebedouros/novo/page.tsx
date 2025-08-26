@@ -64,7 +64,7 @@ export default function NovoBebedouroPage() {
       console.log("Dados do bebedouro:", formData);
 
       // Redirecionar para a lista após o salvamento
-      router.push("/usuario");
+      router.push("/bebedouros");
     } catch (error) {
       console.error("Erro ao salvar bebedouro:", error);
     } finally {
@@ -100,7 +100,7 @@ export default function NovoBebedouroPage() {
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/usuario">
+            <Link href="/bebedouros">
               <Button
                 variant="ghost"
                 size="sm"
