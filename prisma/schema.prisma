@@ -26,6 +26,30 @@ model Post {
     @@index([name])
 }
 
+model Bebedouro {
+    id          String          @id @default(cuid())
+    nome        String
+    localizacao String
+    descricao   String?
+    status      StatusBebedouro @default(ATIVO)
+    latitude    Float?
+    longitude   Float?
+    createdAt   DateTime        @default(now())
+    updatedAt   DateTime        @updatedAt
+
+    createdBy   User   @relation(fields: [createdById], references: [id])
+    createdById String
+
+    @@index([nome])
+    @@index([status])
+}
+
+enum StatusBebedouro {
+    ATIVO
+    INATIVO
+    MANUTENCAO
+}
+
 // Necessary for Next auth
 model Account {
     id                       String  @id @default(cuid())
@@ -55,14 +79,15 @@ model Session {
 }
 
 model User {
-    id            String    @id @default(cuid())
+    id            String      @id @default(cuid())
     name          String?
-    email         String?   @unique
+    email         String?     @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
     posts         Post[]
+    bebedouros    Bebedouro[]
 }
 
 model VerificationToken {
