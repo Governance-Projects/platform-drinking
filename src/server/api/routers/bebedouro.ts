@@ -51,11 +51,6 @@ const BebedouroResponseSchema = z.object({
   longitude: z.number().nullable(),
   createdAt: z.date(),
   updatedAt: z.date(),
-  createdBy: z.object({
-    id: z.string(),
-    name: z.string().nullable(),
-    email: z.string().nullable(),
-  }),
 });
 
 // Schema de resposta da lista
@@ -97,15 +92,6 @@ export const bebedouroRouter = createTRPCRouter({
       const [bebedouros, total] = await Promise.all([
         ctx.db.bebedouro.findMany({
           where,
-          include: {
-            createdBy: {
-              select: {
-                id: true,
-                name: true,
-                email: true,
-              },
-            },
-          },
           orderBy: { createdAt: "desc" },
           take: limit,
           skip: offset,
@@ -136,22 +122,13 @@ export const bebedouroRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const bebedouro = await ctx.db.bebedouro.findUnique({
         where: { id: input.id },
-        include: {
-          createdBy: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
-      });
+});
 
       return bebedouro;
     }),
 
   // Criar bebedouro (protegido)
-  create: protectedProcedure
+  create: publicProcedure
     .meta({
       openapi: {
         method: "POST",
@@ -166,19 +143,7 @@ export const bebedouroRouter = createTRPCRouter({
     .output(BebedouroResponseSchema)
     .mutation(async ({ ctx, input }) => {
       const bebedouro = await ctx.db.bebedouro.create({
-        data: {
-          ...input,
-          createdBy: { connect: { id: ctx.session.user.id } },
-        },
-        include: {
-          createdBy: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
+        data: input,
       });
 
       return bebedouro;
@@ -204,29 +169,15 @@ export const bebedouroRouter = createTRPCRouter({
       // Verificar se o bebedouro existe e se o usuário tem permissão
       const existingBebedouro = await ctx.db.bebedouro.findUnique({
         where: { id },
-        select: { createdById: true },
       });
 
       if (!existingBebedouro) {
         throw new Error("Bebedouro não encontrado");
       }
 
-      if (existingBebedouro.createdById !== ctx.session.user.id) {
-        throw new Error("Você não tem permissão para editar este bebedouro");
-      }
-
       const bebedouro = await ctx.db.bebedouro.update({
         where: { id },
         data,
-        include: {
-          createdBy: {
-            select: {
-              id: true,
-              name: true,
-              email: true,
-            },
-          },
-        },
       });
 
       return bebedouro;
@@ -250,15 +201,10 @@ export const bebedouroRouter = createTRPCRouter({
       // Verificar se o bebedouro existe e se o usuário tem permissão
       const existingBebedouro = await ctx.db.bebedouro.findUnique({
         where: { id: input.id },
-        select: { createdById: true },
       });
 
       if (!existingBebedouro) {
         throw new Error("Bebedouro não encontrado");
-      }
-
-      if (existingBebedouro.createdById !== ctx.session.user.id) {
-        throw new Error("Você não tem permissão para deletar este bebedouro");
       }
 
       await ctx.db.bebedouro.delete({

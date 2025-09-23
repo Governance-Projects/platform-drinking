@@ -14,18 +14,6 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
 model Bebedouro {
     id          String          @id @default(cuid())
     nome        String
@@ -36,9 +24,6 @@ model Bebedouro {
     longitude   Float?
     createdAt   DateTime        @default(now())
     updatedAt   DateTime        @updatedAt
-
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
 
     @@index([nome])
     @@index([status])
@@ -79,15 +64,13 @@ model Session {
 }
 
 model User {
-    id            String      @id @default(cuid())
+    id            String    @id @default(cuid())
     name          String?
-    email         String?     @unique
+    email         String?   @unique
     emailVerified DateTime?
     image         String?
     accounts      Account[]
     sessions      Session[]
-    posts         Post[]
-    bebedouros    Bebedouro[]
 }
 
 model VerificationToken {

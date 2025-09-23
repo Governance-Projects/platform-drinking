@@ -24,6 +24,7 @@ import {
   SelectValue,
 } from "~/components/ui/select";
 import { Alert, AlertDescription } from "~/components/ui/alert";
+import { api } from "~/trpc/react";
 
 type FormData = {
   nome: string;
@@ -45,6 +46,8 @@ export default function NovoBebedouroPage() {
     latitude: "",
     longitude: "",
   });
+
+  const createSinkMutation = api.bebedouro.create.useMutation();
 
   const handleInputChange = (name: string, value: string) => {
     setFormData((prev) => ({
