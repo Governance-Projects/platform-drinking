@@ -1,246 +1,436 @@
-"use client";
-
-import { useEffect, useState } from "react";
-import dynamic from "next/dynamic";
+import { DocsLayout } from "~/components/docs/DocsLayout";
+import { DocsSection } from "~/components/docs/DocsSection";
+import { ApiEndpoint } from "~/components/docs/ApiEndpoint";
+import { InfoCard } from "~/components/docs/InfoCard";
+import { CodeBlock } from "~/components/docs/CodeBlock";
 import {
-  Card,
-  CardContent,
-  CardDescription,
-  CardHeader,
-  CardTitle,
-} from "~/components/ui/card";
-import { Button } from "~/components/ui/button";
-import { Alert, AlertDescription } from "~/components/ui/alert";
-import { ExternalLink, FileText, Loader2 } from "lucide-react";
-
-// Importação dinâmica do SwaggerUI para evitar problemas de SSR
-const SwaggerUI = dynamic(() => import("swagger-ui-react"), {
-  ssr: false,
-  loading: () => (
-    <div className="flex items-center justify-center p-8">
-      <Loader2 className="h-8 w-8 animate-spin" />
-      <span className="ml-2">Carregando documentação...</span>
-    </div>
-  ),
-}) as any;
-
-// CSS do Swagger UI será importado dinamicamente
-let swaggerUiCssLoaded = false;
+  Shield,
+  Zap,
+  Database,
+  Key,
+  AlertTriangle,
+  CheckCircle,
+  Info,
+} from "lucide-react";
 
 export default function ApiDocsPage() {
-  const [isLoading, setIsLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  return (
+    <DocsLayout>
+      {/* Overview Section */}
+      <DocsSection
+        id="overview"
+        title="Visão Geral"
+        description="A Drinking API fornece endpoints para gerenciar bebedouros de forma eficiente e segura."
+      >
+        <div className="grid grid-cols-1 gap-4 md:grid-cols-2">
+          <InfoCard
+            icon={Zap}
+            title="Performance"
+            description="API construída com tRPC para máxima performance e type-safety."
+            variant="success"
+          />
+          <InfoCard
+            icon={Shield}
+            title="Segurança"
+            description="Autenticação JWT com NextAuth.js e validação com Zod."
+            variant="default"
+          />
+          <InfoCard
+            icon={Database}
+            title="Banco de Dados"
+            description="Integração com PostgreSQL via Prisma ORM."
+            variant="default"
+          />
+          <InfoCard
+            icon={Key}
+            title="OpenAPI"
+            description="Especificação OpenAPI 3.0 para documentação interativa."
+            variant="default"
+          />
+        </div>
 
-  useEffect(() => {
-    // Simular carregamento
-    const timer = setTimeout(() => {
-      setIsLoading(false);
-    }, 1000);
+        <div className="mt-8">
+          <h3 className="mb-4 text-xl font-semibold">Base URL</h3>
+          <CodeBlock language="text" title="Endpoint Base">
+            {process.env.NODE_ENV === "production"
+              ? "https://drinking-app.vercel.app/api"
+              : "http://localhost:3001/api"}
+          </CodeBlock>
+        </div>
+      </DocsSection>
 
-    return () => clearTimeout(timer);
-  }, []);
+      {/* Authentication Section */}
+      <DocsSection
+        id="authentication"
+        title="Autenticação"
+        description="A API utiliza JWT (JSON Web Tokens) para autenticação de usuários."
+      >
+        <InfoCard
+          icon={AlertTriangle}
+          title="Token Requerido"
+          description="Endpoints protegidos requerem um token JWT válido no header Authorization."
+          variant="warning"
+        />
 
-  const swaggerConfig = {
-    url: "/api/openapi.json",
-  };
+        <div className="space-y-6">
+          <div>
+            <h3 className="mb-3 text-lg font-semibold">Como autenticar</h3>
+            <CodeBlock
+              language="bash"
+              title="Exemplo de Requisição Autenticada"
+            >
+              {`curl -X POST "http://localhost:3001/api/bebedouros" \\
+  -H "Authorization: Bearer YOUR_JWT_TOKEN" \\
+  -H "Content-Type: application/json" \\
+  -d '{
+    "nome": "Bebedouro Central",
+    "localizacao": "Praça Principal"
+  }'`}
+            </CodeBlock>
+          </div>
 
-  if (isLoading) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 dark:from-slate-950 dark:to-slate-900">
-        <div className="mx-auto max-w-4xl">
-          <div className="flex min-h-[400px] items-center justify-center">
-            <Loader2 className="h-8 w-8 animate-spin" />
-            <span className="ml-2">Carregando documentação...</span>
+          <div>
+            <h3 className="mb-3 text-lg font-semibold">Obter Token</h3>
+            <p className="text-muted-foreground mb-3">
+              O token JWT é obtido através do sistema de autenticação
+              NextAuth.js. Após o login, o token estará disponível na sessão do
+              usuário.
+            </p>
+            <CodeBlock language="javascript" title="Exemplo Next.js">
+              {`import { useSession } from "next-auth/react";
+
+function MyComponent() {
+  const { data: session } = useSession();
+  
+  if (session?.user) {
+    // Token disponível em session.accessToken
+    const token = session.accessToken;
+  }
+}`}
+            </CodeBlock>
           </div>
         </div>
-      </div>
-    );
-  }
+      </DocsSection>
 
-  if (error) {
-    return (
-      <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 dark:from-slate-950 dark:to-slate-900">
-        <div className="mx-auto max-w-4xl">
-          <Alert className="mt-8">
-            <FileText className="h-4 w-4" />
-            <AlertDescription>
-              {error}. Tente recarregar a página.
-            </AlertDescription>
-          </Alert>
-        </div>
-      </div>
-    );
-  }
-
-  return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 dark:from-slate-950 dark:to-slate-900">
-      <div className="mx-auto max-w-7xl p-4">
-        {/* Header */}
-        <div className="mb-8">
-          <Card className="shadow-xl">
-            <CardHeader>
-              <div className="flex items-center justify-between">
-                <div>
-                  <CardTitle className="text-3xl font-bold text-slate-900 dark:text-slate-100">
-                    📖 Documentação da API
-                  </CardTitle>
-                  <CardDescription className="mt-2 text-lg">
-                    Drinking API - Sistema de Gerenciamento de Bebedouros
-                  </CardDescription>
-                </div>
-                <div className="flex gap-2">
-                  <Button variant="outline" asChild>
-                    <a
-                      href="/api/openapi.json"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <FileText className="mr-2 h-4 w-4" />
-                      JSON Schema
-                    </a>
-                  </Button>
-                  <Button variant="outline" asChild>
-                    <a
-                      href="/usuario"
-                      target="_blank"
-                      rel="noopener noreferrer"
-                    >
-                      <ExternalLink className="mr-2 h-4 w-4" />
-                      Ir para App
-                    </a>
-                  </Button>
-                </div>
-              </div>
-            </CardHeader>
-            <CardContent>
-              <div className="grid grid-cols-1 gap-4 text-sm md:grid-cols-3">
-                <div>
-                  <h4 className="font-semibold text-slate-900 dark:text-slate-100">
-                    🚀 Versão
-                  </h4>
-                  <p className="text-slate-600 dark:text-slate-400">v1.0.0</p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-slate-900 dark:text-slate-100">
-                    🛠️ Tecnologias
-                  </h4>
-                  <p className="text-slate-600 dark:text-slate-400">
-                    tRPC + OpenAPI + Zod
-                  </p>
-                </div>
-                <div>
-                  <h4 className="font-semibold text-slate-900 dark:text-slate-100">
-                    🔐 Autenticação
-                  </h4>
-                  <p className="text-slate-600 dark:text-slate-400">
-                    NextAuth.js (JWT)
-                  </p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+      {/* Getting Started */}
+      <DocsSection
+        id="getting-started"
+        title="Começando"
+        description="Exemplos práticos para começar a usar a API rapidamente."
+      >
+        <div>
+          <h3 className="mb-3 text-lg font-semibold">
+            Exemplo Básico - Listar Bebedouros
+          </h3>
+          <CodeBlock language="bash" title="cURL">
+            {`curl -X GET "http://localhost:3001/api/bebedouros?limit=5"`}
+          </CodeBlock>
         </div>
 
-        {/* Informações importantes */}
-        <div className="mb-6 grid grid-cols-1 gap-4 md:grid-cols-2">
-          <Alert>
-            <FileText className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Endpoints Públicos:</strong> Listagem e visualização de
-              bebedouros não requerem autenticação.
-            </AlertDescription>
-          </Alert>
+        <div>
+          <h3 className="mb-3 text-lg font-semibold">Resposta de Exemplo</h3>
+          <CodeBlock language="json" title="Response">
+            {`{
+  "bebedouros": [
+    {
+      "id": "clx123456789",
+      "nome": "Bebedouro Principal", 
+      "localizacao": "Entrada do Parque",
+      "status": "ATIVO",
+      "latitude": -23.5505,
+      "longitude": -46.6333,
+      "createdAt": "2024-01-15T10:30:00Z",
+      "updatedAt": "2024-01-15T10:30:00Z"
+    }
+  ],
+  "total": 1,
+  "hasMore": false
+}`}
+          </CodeBlock>
+        </div>
+      </DocsSection>
 
-          <Alert>
-            <FileText className="h-4 w-4" />
-            <AlertDescription>
-              <strong>Endpoints Protegidos:</strong> Criação, edição e exclusão
-              requerem autenticação JWT.
-            </AlertDescription>
-          </Alert>
+      {/* Endpoints Section */}
+      <DocsSection
+        id="endpoints"
+        title="Endpoints"
+        description="Lista completa de todos os endpoints disponíveis na API."
+      >
+        {/* Bebedouros Endpoints */}
+        <div id="list-bebedouros">
+          <ApiEndpoint
+            method="GET"
+            path="/bebedouros"
+            title="Listar Bebedouros"
+            description="Retorna uma lista paginada de bebedouros com filtros opcionais"
+            tags={["Bebedouros"]}
+            parameters={[
+              {
+                name: "status",
+                type: "string",
+                required: false,
+                description: "Filtrar por status (ATIVO, INATIVO, MANUTENCAO)",
+                example: "ATIVO",
+              },
+              {
+                name: "search",
+                type: "string",
+                required: false,
+                description: "Busca textual por nome, localização ou descrição",
+                example: "parque",
+              },
+              {
+                name: "limit",
+                type: "number",
+                required: false,
+                description: "Limite de resultados (1-100)",
+                example: "10",
+              },
+              {
+                name: "offset",
+                type: "number",
+                required: false,
+                description: "Deslocamento para paginação",
+                example: "0",
+              },
+            ]}
+            responses={{
+              "200": {
+                description: "Lista de bebedouros retornada com sucesso",
+                content: {
+                  bebedouros: "Array<Bebedouro>",
+                  total: "number",
+                  hasMore: "boolean",
+                },
+              },
+            }}
+          />
         </div>
 
-        {/* Swagger UI */}
-        <Card className="shadow-xl">
-          <CardContent className="p-0">
-            <div
-              id="swagger-ui"
-              className="swagger-ui-container"
-              style={
-                {
-                  // Estilos personalizados para integrar com o tema
-                  "--swagger-ui-border-radius": "8px",
-                  "--swagger-ui-font-family": "var(--font-sans)",
-                } as React.CSSProperties
-              }
-            >
-              <SwaggerUI {...swaggerConfig} />
-            </div>
-          </CardContent>
-        </Card>
-
-        {/* Footer */}
-        <div className="mt-8 text-center">
-          <p className="text-sm text-slate-600 dark:text-slate-400">
-            Documentação gerada automaticamente via tRPC + OpenAPI
-          </p>
+        <div id="create-bebedouro">
+          <ApiEndpoint
+            method="POST"
+            path="/bebedouros"
+            title="Criar Novo Bebedouro"
+            description="Cria um novo bebedouro no sistema"
+            tags={["Bebedouros"]}
+            security={true}
+            requestBody={{
+              required: true,
+              content: {
+                nome: "string (obrigatório)",
+                localizacao: "string (obrigatório)",
+                descricao: "string (opcional)",
+                status: "ATIVO | INATIVO | MANUTENCAO (opcional)",
+                latitude: "number (opcional)",
+                longitude: "number (opcional)",
+              },
+            }}
+            responses={{
+              "201": {
+                description: "Bebedouro criado com sucesso",
+                content: "Bebedouro object",
+              },
+              "400": {
+                description: "Erro de validação nos dados enviados",
+              },
+              "401": {
+                description: "Token de autenticação não fornecido ou inválido",
+              },
+            }}
+          />
         </div>
-      </div>
 
-      {/* Estilos customizados para o Swagger UI */}
-      <style jsx global>{`
-        .swagger-ui-container {
-          font-family: var(--font-sans, ui-sans-serif, system-ui, sans-serif);
-        }
+        <div id="get-bebedouro">
+          <ApiEndpoint
+            method="GET"
+            path="/bebedouros/{id}"
+            title="Buscar Bebedouro por ID"
+            description="Retorna os detalhes de um bebedouro específico"
+            tags={["Bebedouros"]}
+            parameters={[
+              {
+                name: "id",
+                type: "string",
+                required: true,
+                description: "ID único do bebedouro",
+                example: "clx123456789",
+              },
+            ]}
+            responses={{
+              "200": {
+                description: "Detalhes do bebedouro",
+                content: "Bebedouro object",
+              },
+              "404": {
+                description: "Bebedouro não encontrado",
+              },
+            }}
+          />
+        </div>
 
-        .swagger-ui .topbar {
-          display: none;
-        }
+        <div id="update-bebedouro">
+          <ApiEndpoint
+            method="PUT"
+            path="/bebedouros/{id}"
+            title="Atualizar Bebedouro"
+            description="Atualiza os dados de um bebedouro existente"
+            tags={["Bebedouros"]}
+            security={true}
+            parameters={[
+              {
+                name: "id",
+                type: "string",
+                required: true,
+                description: "ID único do bebedouro",
+                example: "clx123456789",
+              },
+            ]}
+            requestBody={{
+              required: true,
+              content: {
+                nome: "string (opcional)",
+                localizacao: "string (opcional)",
+                descricao: "string (opcional)",
+                status: "ATIVO | INATIVO | MANUTENCAO (opcional)",
+                latitude: "number (opcional)",
+                longitude: "number (opcional)",
+              },
+            }}
+            responses={{
+              "200": {
+                description: "Bebedouro atualizado com sucesso",
+                content: "Bebedouro object",
+              },
+              "400": {
+                description: "Erro de validação",
+              },
+              "401": {
+                description: "Não autorizado",
+              },
+              "404": {
+                description: "Bebedouro não encontrado",
+              },
+            }}
+          />
+        </div>
 
-        .swagger-ui .info {
-          margin: 20px 0;
-        }
+        <div id="delete-bebedouro">
+          <ApiEndpoint
+            method="DELETE"
+            path="/bebedouros/{id}"
+            title="Deletar Bebedouro"
+            description="Remove um bebedouro do sistema permanentemente"
+            tags={["Bebedouros"]}
+            security={true}
+            parameters={[
+              {
+                name: "id",
+                type: "string",
+                required: true,
+                description: "ID único do bebedouro",
+                example: "clx123456789",
+              },
+            ]}
+            responses={{
+              "200": {
+                description: "Bebedouro deletado com sucesso",
+                content: {
+                  success: "boolean",
+                  message: "string",
+                },
+              },
+              "401": {
+                description: "Não autorizado",
+              },
+              "404": {
+                description: "Bebedouro não encontrado",
+              },
+            }}
+          />
+        </div>
 
-        .swagger-ui .scheme-container {
-          background: transparent;
-          box-shadow: none;
-          border: 1px solid #e2e8f0;
-          border-radius: 8px;
-        }
+        <div id="bebedouros-stats">
+          <ApiEndpoint
+            method="GET"
+            path="/bebedouros/stats"
+            title="Estatísticas dos Bebedouros"
+            description="Retorna estatísticas gerais sobre os bebedouros do sistema"
+            tags={["Bebedouros"]}
+            responses={{
+              "200": {
+                description: "Estatísticas dos bebedouros",
+                content: {
+                  total: "number",
+                  ativos: "number",
+                  inativos: "number",
+                  manutencao: "number",
+                  criadosUltimos30Dias: "number",
+                },
+              },
+            }}
+          />
+        </div>
 
-        .swagger-ui .opblock.opblock-get {
-          border-color: #10b981;
-          background: rgba(16, 185, 129, 0.05);
-        }
+        {/* Posts Demo Endpoint */}
+        <div id="posts-hello">
+          <ApiEndpoint
+            method="GET"
+            path="/posts/hello"
+            title="Saudação Personalizada (Demo)"
+            description="Endpoint de demonstração que retorna uma saudação personalizada"
+            tags={["Demo"]}
+            parameters={[
+              {
+                name: "text",
+                type: "string",
+                required: true,
+                description: "Texto para a saudação personalizada",
+                example: "mundo",
+              },
+            ]}
+            responses={{
+              "200": {
+                description: "Saudação personalizada",
+                content: {
+                  greeting: "string",
+                },
+              },
+              "400": {
+                description: "Parâmetro text é obrigatório",
+              },
+            }}
+          />
+        </div>
+      </DocsSection>
 
-        .swagger-ui .opblock.opblock-post {
-          border-color: #3b82f6;
-          background: rgba(59, 130, 246, 0.05);
-        }
-
-        .swagger-ui .opblock.opblock-put {
-          border-color: #f59e0b;
-          background: rgba(245, 158, 11, 0.05);
-        }
-
-        .swagger-ui .opblock.opblock-delete {
-          border-color: #ef4444;
-          background: rgba(239, 68, 68, 0.05);
-        }
-
-        @media (prefers-color-scheme: dark) {
-          .swagger-ui {
-            filter: invert(1) hue-rotate(180deg);
-          }
-
-          .swagger-ui .opblock.opblock-get,
-          .swagger-ui .opblock.opblock-post,
-          .swagger-ui .opblock.opblock-put,
-          .swagger-ui .opblock.opblock-delete {
-            filter: invert(1) hue-rotate(180deg);
-          }
-        }
-      `}</style>
-    </div>
+      {/* Status Codes */}
+      <DocsSection
+        id="status-codes"
+        title="Códigos de Status"
+        description="Lista dos códigos de status HTTP utilizados pela API."
+      >
+        <div className="space-y-4">
+          <InfoCard
+            icon={CheckCircle}
+            title="2xx Success"
+            description="200 OK - Requisição bem-sucedida | 201 Created - Recurso criado com sucesso"
+            variant="success"
+          />
+          <InfoCard
+            icon={AlertTriangle}
+            title="4xx Client Error"
+            description="400 Bad Request - Erro na requisição | 401 Unauthorized - Não autenticado | 403 Forbidden - Sem permissão | 404 Not Found - Recurso não encontrado"
+            variant="warning"
+          />
+          <InfoCard
+            icon={Info}
+            title="5xx Server Error"
+            description="500 Internal Server Error - Erro interno do servidor"
+            variant="destructive"
+          />
+        </div>
+      </DocsSection>
+    </DocsLayout>
   );
 }
