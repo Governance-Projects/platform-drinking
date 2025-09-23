@@ -64,7 +64,7 @@ export default function NovoBebedouroPage() {
       console.log("Dados do bebedouro:", formData);
 
       // Redirecionar para a lista após o salvamento
-      router.push("/bebedouros");
+      router.push("/app/bebedouros");
     } catch (error) {
       console.error("Erro ao salvar bebedouro:", error);
     } finally {
@@ -95,12 +95,12 @@ export default function NovoBebedouroPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 dark:from-slate-950 dark:to-slate-900">
+    <div className="bg-background min-h-screen p-6">
       <div className="mx-auto max-w-2xl">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4">
-            <Link href="/bebedouros">
+            <Link href="/app/bebedouros">
               <Button
                 variant="ghost"
                 size="sm"
@@ -281,7 +281,7 @@ export default function NovoBebedouroPage() {
                   {isLoading ? "Salvando..." : "Salvar Bebedouro"}
                 </Button>
 
-                <Link href="/usuario">
+                <Link href="/app/bebedouros">
                   <Button variant="outline" className="flex items-center gap-2">
                     Cancelar
                   </Button>

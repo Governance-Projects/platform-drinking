@@ -177,8 +177,8 @@ export default function BebedourosPage() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-slate-50 to-slate-100 p-4 dark:from-slate-950 dark:to-slate-900">
-      <div className="mx-auto max-w-7xl">
+    <div className="bg-background w-full">
+      <div className="w-full space-y-8">
         {/* Header */}
         <div className="mb-8">
           <div className="flex items-center justify-between">
@@ -197,7 +197,7 @@ export default function BebedourosPage() {
                   API Docs
                 </Button>
               </Link>
-              <Link href="/bebedouros/novo">
+              <Link href="/app/bebedouros/novo">
                 <Button className="flex items-center gap-2">
                   <Plus className="h-4 w-4" />
                   Novo Bebedouro
