@@ -9,7 +9,7 @@ export default function HomePage() {
           Drinking App
         </h1>
 
-        <Link href="/bebedouros">
+        <Link href="/app/bebedouros">
           <Button size="lg" className="px-8 py-4 text-lg">
             Acessar Bebedouros
           </Button>

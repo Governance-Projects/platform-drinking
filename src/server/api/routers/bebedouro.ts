@@ -61,7 +61,6 @@ const ListBebedourosResponseSchema = z.object({
 });
 
 export const bebedouroRouter = createTRPCRouter({
-  // Listar todos os bebedouros (público)
   list: publicProcedure
     .meta({
       openapi: {
@@ -106,7 +105,6 @@ export const bebedouroRouter = createTRPCRouter({
       };
     }),
 
-  // Buscar bebedouro por ID (público)
   getById: publicProcedure
     .meta({
       openapi: {
@@ -122,12 +120,11 @@ export const bebedouroRouter = createTRPCRouter({
     .query(async ({ ctx, input }) => {
       const bebedouro = await ctx.db.bebedouro.findUnique({
         where: { id: input.id },
-});
+      });
 
       return bebedouro;
     }),
 
-  // Criar bebedouro (protegido)
   create: publicProcedure
     .meta({
       openapi: {
@@ -149,7 +146,6 @@ export const bebedouroRouter = createTRPCRouter({
       return bebedouro;
     }),
 
-  // Atualizar bebedouro (protegido)
   update: protectedProcedure
     .meta({
       openapi: {
@@ -166,7 +162,6 @@ export const bebedouroRouter = createTRPCRouter({
     .mutation(async ({ ctx, input }) => {
       const { id, ...data } = input;
 
-      // Verificar se o bebedouro existe e se o usuário tem permissão
       const existingBebedouro = await ctx.db.bebedouro.findUnique({
         where: { id },
       });
@@ -183,7 +178,6 @@ export const bebedouroRouter = createTRPCRouter({
       return bebedouro;
     }),
 
-  // Deletar bebedouro (protegido)
   delete: protectedProcedure
     .meta({
       openapi: {
@@ -198,7 +192,6 @@ export const bebedouroRouter = createTRPCRouter({
     .input(GetBebedouroByIdSchema)
     .output(z.object({ success: z.boolean(), message: z.string() }))
     .mutation(async ({ ctx, input }) => {
-      // Verificar se o bebedouro existe e se o usuário tem permissão
       const existingBebedouro = await ctx.db.bebedouro.findUnique({
         where: { id: input.id },
       });
@@ -217,7 +210,6 @@ export const bebedouroRouter = createTRPCRouter({
       };
     }),
 
-  // Estatísticas dos bebedouros (público)
   stats: publicProcedure
     .meta({
       openapi: {

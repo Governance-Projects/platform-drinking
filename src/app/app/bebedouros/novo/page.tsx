@@ -23,7 +23,7 @@ import {
   SelectTrigger,
   SelectValue,
 } from "~/components/ui/select";
-import { Alert, AlertDescription } from "~/components/ui/alert";
+
 import { api } from "~/trpc/react";
 
 type FormData = {
@@ -202,75 +202,6 @@ export default function NovoBebedouroPage() {
                     <SelectItem value="MANUTENCAO">Manutenção</SelectItem>
                   </SelectContent>
                 </Select>
-              </div>
-
-              {/* Coordenadas */}
-              <div className="space-y-4">
-                <div className="flex items-center justify-between">
-                  <Label>Coordenadas GPS (Opcional)</Label>
-                  <Button
-                    type="button"
-                    variant="outline"
-                    size="sm"
-                    onClick={handleGetCurrentLocation}
-                    className="flex items-center gap-2"
-                  >
-                    <MapPin className="h-4 w-4" />
-                    Usar Localização Atual
-                  </Button>
-                </div>
-
-                <div className="grid grid-cols-2 gap-4">
-                  <div className="space-y-2">
-                    <Label htmlFor="latitude">Latitude</Label>
-                    <Input
-                      id="latitude"
-                      type="number"
-                      step="any"
-                      placeholder="-23.5505"
-                      value={formData.latitude}
-                      onChange={(e) =>
-                        handleInputChange("latitude", e.target.value)
-                      }
-                    />
-                  </div>
-                  <div className="space-y-2">
-                    <Label htmlFor="longitude">Longitude</Label>
-                    <Input
-                      id="longitude"
-                      type="number"
-                      step="any"
-                      placeholder="-46.6333"
-                      value={formData.longitude}
-                      onChange={(e) =>
-                        handleInputChange("longitude", e.target.value)
-                      }
-                    />
-                  </div>
-                </div>
-
-                {formData.latitude && formData.longitude && (
-                  <Alert>
-                    <MapPin className="h-4 w-4" />
-                    <AlertDescription>
-                      Coordenadas: {formData.latitude}, {formData.longitude}
-                      {/* Link para Google Maps */}
-                      <Button
-                        variant="link"
-                        className="ml-2 h-auto p-0"
-                        asChild
-                      >
-                        <a
-                          href={`https://www.google.com/maps?q=${formData.latitude},${formData.longitude}`}
-                          target="_blank"
-                          rel="noopener noreferrer"
-                        >
-                          Ver no Google Maps
-                        </a>
-                      </Button>
-                    </AlertDescription>
-                  </Alert>
-                )}
               </div>
 
               {/* Botões de Ação */}
