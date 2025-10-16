@@ -1,9 +1,8 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
-import { useRouter } from "next/navigation";
-import { ArrowLeft, MapPin, Save } from "lucide-react";
+
+import { ArrowLeft, MapPin } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -14,93 +13,44 @@ import {
   CardTitle,
 } from "~/components/ui/card";
 import { Input } from "~/components/ui/input";
-import { Label } from "~/components/ui/label";
+
 import { Textarea } from "~/components/ui/textarea";
-import {
-  Select,
-  SelectContent,
-  SelectItem,
-  SelectTrigger,
-  SelectValue,
-} from "~/components/ui/select";
 
 import { api } from "~/trpc/react";
-
-type FormData = {
-  nome: string;
-  localizacao: string;
-  descricao: string;
-  status: "ATIVO" | "INATIVO" | "MANUTENCAO";
-  latitude: string;
-  longitude: string;
-};
+import { useForm, type SubmitHandler } from "react-hook-form";
+import { zodResolver } from "@hookform/resolvers/zod";
+import {
+  createSinkValidator,
+  type CreateSinkValidator,
+} from "~/utils/validators/sink/create-sink";
+import { toast } from "sonner";
+import {
+  Form,
+  FormControl,
+  FormField,
+  FormItem,
+  FormLabel,
+  FormMessage,
+} from "~/components/ui/form";
 
 export default function NovoBebedouroPage() {
-  const router = useRouter();
-  const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState<FormData>({
-    nome: "",
-    localizacao: "",
-    descricao: "",
-    status: "ATIVO",
-    latitude: "",
-    longitude: "",
+  const form = useForm<CreateSinkValidator>({
+    resolver: zodResolver(createSinkValidator),
   });
 
   const createSinkMutation = api.bebedouro.create.useMutation();
 
-  const handleInputChange = (name: string, value: string) => {
-    setFormData((prev) => ({
-      ...prev,
-      [name]: value,
-    }));
-  };
-
-  const handleSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    setIsLoading(true);
-
-    try {
-      // Simular salvamento (aqui você faria a chamada para sua API)
-      await new Promise((resolve) => setTimeout(resolve, 2000));
-
-      console.log("Dados do bebedouro:", formData);
-
-      // Redirecionar para a lista após o salvamento
-      router.push("/app/bebedouros");
-    } catch (error) {
-      console.error("Erro ao salvar bebedouro:", error);
-    } finally {
-      setIsLoading(false);
-    }
-  };
-
-  const handleGetCurrentLocation = () => {
-    if (navigator.geolocation) {
-      navigator.geolocation.getCurrentPosition(
-        (position) => {
-          setFormData((prev) => ({
-            ...prev,
-            latitude: position.coords.latitude.toString(),
-            longitude: position.coords.longitude.toString(),
-          }));
-        },
-        (error) => {
-          console.error("Erro ao obter localização:", error);
-          alert(
-            "Não foi possível obter sua localização. Verifique as permissões do navegador.",
-          );
-        },
-      );
-    } else {
-      alert("Geolocalização não é suportada por este navegador.");
-    }
+  const submit: SubmitHandler<CreateSinkValidator> = (data) => {
+    toast.promise(() => createSinkMutation.mutateAsync(data), {
+      loading: "Carregando...",
+      success: `Salvo com sucesso`,
+      error: "Ocorreu um erro ao registrar",
+    });
   };
 
   return (
     <div className="bg-background min-h-screen p-6">
       <div className="mx-auto max-w-2xl">
-        {/* Header */}
         <div className="mb-8">
           <div className="flex items-center gap-4">
             <Link href="/app/bebedouros">
@@ -124,7 +74,6 @@ export default function NovoBebedouroPage() {
           </div>
         </div>
 
-        {/* Formulário */}
         <Card className="shadow-xl">
           <CardHeader>
             <CardTitle className="flex items-center gap-2">
@@ -137,90 +86,48 @@ export default function NovoBebedouroPage() {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={handleSubmit} className="space-y-6">
-              {/* Nome */}
-              <div className="space-y-2">
-                <Label htmlFor="nome">
-                  Nome do Bebedouro <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="nome"
-                  type="text"
-                  placeholder="Ex: Bebedouro Principal - Entrada"
-                  value={formData.nome}
-                  onChange={(e) => handleInputChange("nome", e.target.value)}
-                  required
+            <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
+              <Form {...form}>
+                <FormField
+                  control={form.control}
+                  name="name"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Nome</FormLabel>
+                      <FormControl>
+                        <Input />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-
-              {/* Localização */}
-              <div className="space-y-2">
-                <Label htmlFor="localizacao">
-                  Localização <span className="text-red-500">*</span>
-                </Label>
-                <Input
-                  id="localizacao"
-                  type="text"
-                  placeholder="Ex: Prédio A - Térreo"
-                  value={formData.localizacao}
-                  onChange={(e) =>
-                    handleInputChange("localizacao", e.target.value)
-                  }
-                  required
+                <FormField
+                  control={form.control}
+                  name="location"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Localização</FormLabel>
+                      <FormControl>
+                        <Input />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-
-              {/* Descrição */}
-              <div className="space-y-2">
-                <Label htmlFor="descricao">Descrição</Label>
-                <Textarea
-                  id="descricao"
-                  placeholder="Descreva informações adicionais sobre o bebedouro..."
-                  value={formData.descricao}
-                  onChange={(e) =>
-                    handleInputChange("descricao", e.target.value)
-                  }
-                  rows={3}
+                <FormField
+                  control={form.control}
+                  name="description"
+                  render={() => (
+                    <FormItem>
+                      <FormLabel>Descrição</FormLabel>
+                      <FormControl>
+                        <Textarea />
+                      </FormControl>
+                      <FormMessage />
+                    </FormItem>
+                  )}
                 />
-              </div>
-
-              {/* Status */}
-              <div className="space-y-2">
-                <Label htmlFor="status">
-                  Status <span className="text-red-500">*</span>
-                </Label>
-                <Select
-                  value={formData.status}
-                  onValueChange={(value) => handleInputChange("status", value)}
-                >
-                  <SelectTrigger>
-                    <SelectValue placeholder="Selecione o status" />
-                  </SelectTrigger>
-                  <SelectContent>
-                    <SelectItem value="ATIVO">Ativo</SelectItem>
-                    <SelectItem value="INATIVO">Inativo</SelectItem>
-                    <SelectItem value="MANUTENCAO">Manutenção</SelectItem>
-                  </SelectContent>
-                </Select>
-              </div>
-
-              {/* Botões de Ação */}
-              <div className="flex gap-4 pt-6">
-                <Button
-                  type="submit"
-                  className="flex flex-1 items-center gap-2"
-                  disabled={isLoading}
-                >
-                  <Save className="h-4 w-4" />
-                  {isLoading ? "Salvando..." : "Salvar Bebedouro"}
-                </Button>
-
-                <Link href="/app/bebedouros">
-                  <Button variant="outline" className="flex items-center gap-2">
-                    Cancelar
-                  </Button>
-                </Link>
-              </div>
+              </Form>
             </form>
           </CardContent>
         </Card>

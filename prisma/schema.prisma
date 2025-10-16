@@ -14,25 +14,21 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Bebedouro {
-    id          String          @id @default(cuid())
-    nome        String
-    localizacao String
-    descricao   String?
-    status      StatusBebedouro @default(ATIVO)
-    latitude    Float?
-    longitude   Float?
-    createdAt   DateTime        @default(now())
-    updatedAt   DateTime        @updatedAt
-
-    @@index([nome])
-    @@index([status])
+enum SinkStatus {
+    ACTIVE
+    INACTIVE
+    MAINTANCE
 }
 
-enum StatusBebedouro {
-    ATIVO
-    INATIVO
-    MANUTENCAO
+model Sink {
+    id          String     @id @default(cuid())
+    name        String
+    location    String
+    description String
+    status      SinkStatus @default(ACTIVE)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
 }
 
 // Necessary for Next auth

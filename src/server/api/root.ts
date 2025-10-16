@@ -1,4 +1,4 @@
-import { bebedouroRouter } from "~/server/api/routers/bebedouro";
+import { sinkRouter } from "~/server/api/routers/bebedouro";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 
 /**
@@ -7,7 +7,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  bebedouro: bebedouroRouter,
+  bebedouro: sinkRouter,
 });
 
 // export type definition of API
