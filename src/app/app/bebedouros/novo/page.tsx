@@ -36,6 +36,12 @@ import {
 export default function NovoBebedouroPage() {
   const form = useForm<CreateSinkValidator>({
     resolver: zodResolver(createSinkValidator),
+    defaultValues: {
+      description: "",
+      location: "",
+      name: "",
+      status: "ACTIVE",
+    },
   });
 
   const createSinkMutation = api.bebedouro.create.useMutation();
@@ -43,8 +49,9 @@ export default function NovoBebedouroPage() {
   const submit: SubmitHandler<CreateSinkValidator> = (data) => {
     toast.promise(() => createSinkMutation.mutateAsync(data), {
       loading: "Carregando...",
-      success: `Salvo com sucesso`,
+      success: `${data.name} Salvo com sucesso`,
       error: "Ocorreu um erro ao registrar",
+      id: "promise-toast",
     });
   };
 
@@ -91,11 +98,11 @@ export default function NovoBebedouroPage() {
                 <FormField
                   control={form.control}
                   name="name"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Nome</FormLabel>
                       <FormControl>
-                        <Input />
+                        <Input data-test="name-input" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -104,11 +111,11 @@ export default function NovoBebedouroPage() {
                 <FormField
                   control={form.control}
                   name="location"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Localização</FormLabel>
                       <FormControl>
-                        <Input />
+                        <Input data-test="location-input" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
@@ -117,16 +124,18 @@ export default function NovoBebedouroPage() {
                 <FormField
                   control={form.control}
                   name="description"
-                  render={() => (
+                  render={({ field }) => (
                     <FormItem>
                       <FormLabel>Descrição</FormLabel>
                       <FormControl>
-                        <Textarea />
+                        <Textarea data-test="description-input" {...field} />
                       </FormControl>
                       <FormMessage />
                     </FormItem>
                   )}
                 />
+
+                <Button data-test="submit-button">Salvar</Button>
               </Form>
             </form>
           </CardContent>
