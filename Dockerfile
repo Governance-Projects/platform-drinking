@@ -12,16 +12,15 @@ RUN corepack enable
 FROM base AS deps
 WORKDIR /app
 COPY package.json pnpm-lock.yaml ./
-# Prevent Prisma postinstall before the schema exists
-ENV PRISMA_SKIP_POSTINSTALL=1
+# Ensure Prisma schema is available so postinstall can run
+COPY prisma ./prisma
 RUN pnpm install --frozen-lockfile
 
 # 3) Builder
 FROM deps AS builder
 COPY . .
 ENV NEXT_TELEMETRY_DISABLED=1
-# Generate Prisma Client now that the schema is available, then build
-RUN pnpm exec prisma generate && pnpm run build
+RUN pnpm run build
 
 # 4) Runner (produção)
 FROM base AS runner
@@ -31,8 +30,8 @@ ENV NEXT_TELEMETRY_DISABLED=1
 COPY --from=builder /app/public ./public
 COPY --from=builder /app/.next ./.next
 COPY --from=builder /app/package.json ./package.json
-# Use node_modules from builder so it includes generated Prisma Client
-COPY --from=builder /app/node_modules ./node_modules
+# Use node_modules from deps; Prisma Client was generated during deps install
+COPY --from=deps /app/node_modules ./node_modules
 EXPOSE 3000
 CMD ["pnpm","start"]
 
