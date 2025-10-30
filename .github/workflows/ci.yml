@@ -1,0 +1,63 @@
+name: CI
+on:
+    pull_request:
+        branches: [main, develop]
+
+jobs:
+    e2e:
+        runs-on: ubuntu-latest
+        env:
+            DB_PASSWORD: password
+            DB_NAME: drinking
+            DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@localhost:5432/${DB_NAME}
+        steps:
+            - name: Checkout
+              uses: actions/checkout@v4
+
+            - name: Setup Node
+              uses: actions/setup-node@v4
+              with:
+                  node-version: 20
+                  cache: "pnpm"
+
+            - name: Setup pnpm
+              uses: pnpm/action-setup@v4
+              with:
+                  version: 9
+
+            - name: Install deps
+              run: pnpm install --frozen-lockfile
+
+            - name: Build app (Next.js)
+              run: pnpm build
+
+            - name: Docker Compose build
+              run: docker compose build
+
+            - name: Up Postgres
+              run: docker compose up -d postgres
+
+            - name: Wait for Postgres healthy
+              run: |
+                  for i in {1..30}; do
+                    if [ "$(docker inspect -f '{{.State.Health.Status}}' drinking-postgres)" = "healthy" ]; then
+                      echo "Postgres is healthy"; break; fi; sleep 2; done
+
+            - name: Apply Prisma migrations
+              run: pnpm prisma migrate deploy
+
+            - name: Up web
+              run: docker compose up -d web
+
+            - name: Wait web ready
+              run: |
+                  npx wait-on http://localhost:3000
+
+            - name: Run Cypress E2E
+              env:
+                  CYPRESS_BASE_URL: http://localhost:3000
+              run: npx cypress run
+
+            - name: Teardown
+              if: always()
+              run: docker compose down -v

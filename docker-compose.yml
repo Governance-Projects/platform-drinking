@@ -45,6 +45,20 @@ services:
     profiles:
       - admin # Use 'docker-compose --profile admin up' para incluir o PgAdmin
 
+  web:
+    build: .
+    container_name: drinking-web
+    ports:
+      - "3000:3000"
+    environment:
+      DATABASE_URL: postgresql://postgres:${DB_PASSWORD:-password}@postgres:5432/${DB_NAME:-drinking}
+      NODE_ENV: production
+    depends_on:
+      postgres:
+        condition: service_healthy
+    networks:
+      - drinking_network
+
 volumes:
   postgres_data:
     driver: local
