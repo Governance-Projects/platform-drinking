@@ -1,5 +1,9 @@
 # 1) Base com PNPM
 FROM node:20-alpine AS base
+
+# Install pnpm
+RUN npm install -g pnpm
+
 ENV PNPM_HOME=/pnpm
 ENV PATH=$PNPM_HOME:$PATH
 RUN corepack enable
