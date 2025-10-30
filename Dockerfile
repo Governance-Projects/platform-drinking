@@ -19,6 +19,7 @@ RUN pnpm install --frozen-lockfile
 # 3) Builder
 FROM deps AS builder
 COPY . .
+RUN cp .env env.example
 ENV NEXT_TELEMETRY_DISABLED=1
 RUN pnpm run build
 
