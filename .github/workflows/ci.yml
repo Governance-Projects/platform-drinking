@@ -35,9 +35,6 @@ jobs:
       - name: Install deps
         run: pnpm install --frozen-lockfile
 
-      - name: Build app (Next.js)
-        run: pnpm build
-
       - name: Docker Compose build
         run: docker compose build
 
