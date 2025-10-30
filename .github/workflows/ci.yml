@@ -11,6 +11,11 @@ jobs:
       DB_PASSWORD: password
       DB_NAME: drinking
       DATABASE_URL: postgresql://postgres:${DB_PASSWORD}@localhost:5432/${DB_NAME}
+      # Next.js build-time vars (server-only)
+      AUTH_URL: http://localhost:3000
+      AUTH_SECRET: UjNzOkwQ8eBspnsc1FgiCKyocv0PhcriaZ8d5ttFBVY=
+      AUTH_DISCORD_ID: abcd
+      AUTH_DISCROD_SECRET: abdc
 
     steps:
       - name: Checkout
