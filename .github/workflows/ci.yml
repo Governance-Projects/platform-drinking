@@ -15,7 +15,7 @@ jobs:
       AUTH_URL: http://localhost:3000
       AUTH_SECRET: UjNzOkwQ8eBspnsc1FgiCKyocv0PhcriaZ8d5ttFBVY=
       AUTH_DISCORD_ID: abcd
-      AUTH_DISCROD_SECRET: abdc
+      AUTH_DISCORD_SECRET: abdc
 
     steps:
       - name: Checkout
