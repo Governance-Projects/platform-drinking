@@ -6,7 +6,7 @@ export const sinkRouter = createTRPCRouter({
     .input(createSinkValidator)
     .mutation(async ({ ctx, input }) => {
       const sink = await ctx.db.sink.create({
-        data: input,
+        data: { ...input, status: "ACTIVE" },
       });
 
       return sink;

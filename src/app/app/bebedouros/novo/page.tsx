@@ -40,7 +40,6 @@ export default function NovoBebedouroPage() {
       description: "",
       location: "",
       name: "",
-      status: "ACTIVE",
     },
   });
 
