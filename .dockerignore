@@ -1,0 +1,8 @@
+node_modules
+.next
+.git
+Dockerfile
+**/cypress/videos
+**/cypress/screenshots
+
+

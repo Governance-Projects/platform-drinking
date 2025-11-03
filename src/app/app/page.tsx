@@ -33,40 +33,31 @@ interface StatCard {
 }
 
 export default function DashboardPage() {
-  const { data: stats, isLoading: statsLoading } = api.bebedouro.stats.useQuery(
-    {},
-  );
-  const { data: bebedouros, isLoading: bebedourosLoading } =
-    api.bebedouro.list.useQuery({
-      limit: 5,
-      offset: 0,
-    });
-
   const statCards: StatCard[] = [
     {
       title: "Total de Bebedouros",
-      value: stats?.total ?? 0,
+      value: 0,
       description: "Bebedouros cadastrados no sistema",
       icon: MapPin,
       variant: "default",
     },
     {
       title: "Bebedouros Ativos",
-      value: stats?.ativos ?? 0,
+      value: 0,
       description: "Funcionando normalmente",
       icon: CheckCircle,
       variant: "success",
     },
     {
       title: "Em Manutenção",
-      value: stats?.manutencao ?? 0,
+      value: 0,
       description: "Precisam de reparo",
       icon: Wrench,
       variant: "warning",
     },
     {
       title: "Inativos",
-      value: stats?.inativos ?? 0,
+      value: 0,
       description: "Fora de funcionamento",
       icon: XCircle,
       variant: "destructive",
@@ -145,7 +136,7 @@ export default function DashboardPage() {
                 </CardHeader>
                 <CardContent>
                   <div className="text-2xl font-bold">
-                    {statsLoading ? "..." : stat.value}
+                    {false ? "..." : stat.value}
                   </div>
                   <p className="text-muted-foreground text-xs">
                     {stat.description}
@@ -165,7 +156,7 @@ export default function DashboardPage() {
             <CardDescription>
               Bebedouros adicionados nos últimos 30 dias:{" "}
               <span className="text-foreground font-semibold">
-                {statsLoading ? "..." : (stats?.criadosUltimos30Dias ?? 0)}
+                {false ? "..." : 0}
               </span>
             </CardDescription>
           </CardHeader>
@@ -184,7 +175,7 @@ export default function DashboardPage() {
               </CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {statsLoading ? (
+              {false ? (
                 <div className="space-y-3">
                   <div className="bg-muted h-4 animate-pulse rounded" />
                   <div className="bg-muted h-4 animate-pulse rounded" />
@@ -197,21 +188,21 @@ export default function DashboardPage() {
                       <CheckCircle className="h-4 w-4 text-green-500" />
                       <span className="text-sm">Ativos</span>
                     </div>
-                    <Badge variant="secondary">{stats?.ativos ?? 0}</Badge>
+                    <Badge variant="secondary">{0}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <Wrench className="h-4 w-4 text-yellow-500" />
                       <span className="text-sm">Em Manutenção</span>
                     </div>
-                    <Badge variant="outline">{stats?.manutencao ?? 0}</Badge>
+                    <Badge variant="outline">{0}</Badge>
                   </div>
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
                       <XCircle className="h-4 w-4 text-red-500" />
                       <span className="text-sm">Inativos</span>
                     </div>
-                    <Badge variant="destructive">{stats?.inativos ?? 0}</Badge>
+                    <Badge variant="destructive">{0}</Badge>
                   </div>
                 </>
               )}
@@ -228,7 +219,7 @@ export default function DashboardPage() {
               <CardDescription>Últimos bebedouros adicionados</CardDescription>
             </CardHeader>
             <CardContent className="space-y-4">
-              {bebedourosLoading ? (
+              {false ? (
                 <div className="space-y-3">
                   {Array.from({ length: 3 }).map((_, i) => (
                     <div key={i} className="space-y-2">
@@ -237,29 +228,41 @@ export default function DashboardPage() {
                     </div>
                   ))}
                 </div>
-              ) : bebedouros?.bebedouros.length ? (
-                bebedouros.bebedouros.slice(0, 5).map((bebedouro) => (
-                  <div key={bebedouro.id} className="space-y-2">
-                    <div className="flex items-center justify-between">
-                      <div className="flex items-center gap-2">
-                        {getStatusIcon(bebedouro.status)}
-                        <span className="text-sm font-medium">
-                          {bebedouro.nome}
-                        </span>
+              ) : false ? (
+                [
+                  {
+                    id: "1",
+                    status: "CLOSED",
+                    nome: "Teste",
+                    localizacao: "Teste",
+                    createdAt: new Date(),
+                  },
+                ]
+                  .slice(0, 5)
+                  .map((bebedouro) => (
+                    <div key={bebedouro.id} className="space-y-2">
+                      <div className="flex items-center justify-between">
+                        <div className="flex items-center gap-2">
+                          {getStatusIcon(bebedouro.status)}
+                          <span className="text-sm font-medium">
+                            {bebedouro.nome}
+                          </span>
+                        </div>
+                        <Badge
+                          variant={getStatusBadgeVariant(bebedouro.status)}
+                        >
+                          {bebedouro.status}
+                        </Badge>
                       </div>
-                      <Badge variant={getStatusBadgeVariant(bebedouro.status)}>
-                        {bebedouro.status}
-                      </Badge>
+                      <div className="text-muted-foreground flex items-center justify-between text-xs">
+                        <span className="flex items-center gap-1">
+                          <MapPin className="h-3 w-3" />
+                          {bebedouro.localizacao}
+                        </span>
+                        <span>{formatDate(bebedouro.createdAt)}</span>
+                      </div>
                     </div>
-                    <div className="text-muted-foreground flex items-center justify-between text-xs">
-                      <span className="flex items-center gap-1">
-                        <MapPin className="h-3 w-3" />
-                        {bebedouro.localizacao}
-                      </span>
-                      <span>{formatDate(bebedouro.createdAt)}</span>
-                    </div>
-                  </div>
-                ))
+                  ))
               ) : (
                 <div className="py-6 text-center">
                   <AlertTriangle className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
