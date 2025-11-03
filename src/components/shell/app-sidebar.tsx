@@ -1,18 +1,17 @@
 import { Home, Inbox } from "lucide-react";
+import Image from "next/image";
 
 import {
   Sidebar,
   SidebarContent,
   SidebarGroup,
   SidebarGroupContent,
-  SidebarGroupLabel,
   SidebarHeader,
   SidebarMenu,
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
 
-// Menu items.
 const items = [
   {
     title: "Home",
@@ -28,13 +27,15 @@ const items = [
 
 export function AppSidebar() {
   return (
-    <Sidebar>
+    <Sidebar className="text-white">
       <SidebarHeader>
+        <div className="flex items-center justify-center">
+          <Image src="/logo.png" alt="logo" width={200} height={100} />
+        </div>
         <h1 className="text-main text-2xl font-bold">Bebedouros</h1>
       </SidebarHeader>
       <SidebarContent>
         <SidebarGroup>
-          <SidebarGroupLabel>Rotas</SidebarGroupLabel>
           <SidebarGroupContent>
             <SidebarMenu>
               {items.map((item) => (

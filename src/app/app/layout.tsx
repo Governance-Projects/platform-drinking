@@ -1,15 +1,27 @@
-import { AppSidebar } from "~/components/layout/app-sidebar";
-import { SidebarProvider, SidebarInset } from "~/components/ui/sidebar";
+import type { ReactNode } from "react";
+import { AppHeader } from "~/components/shell/app-header";
+import { AppSidebar } from "~/components/shell/app-sidebar";
+import { SidebarInset, SidebarProvider } from "~/components/ui/sidebar";
 
-export default function AppLayout({ children }: { children: React.ReactNode }) {
+export default function AppLayout({ children }: { children: ReactNode }) {
   return (
-    <main className="min-h-screen w-full">
-      <SidebarProvider>
-        <AppSidebar />
-        <SidebarInset className="flex flex-1 flex-col">
-          <div className="flex w-full flex-1 flex-col p-6">{children}</div>
-        </SidebarInset>
-      </SidebarProvider>
-    </main>
+    <SidebarProvider
+      style={
+        {
+          "--sidebar-width": "calc(var(--spacing) * 72)",
+          "--header-height": "calc(var(--spacing) * 12)",
+        } as React.CSSProperties
+      }
+    >
+      <AppSidebar />
+      <SidebarInset>
+        <AppHeader />
+        <div className="flex flex-1 flex-col">
+          <div className="@container/main flex flex-1 flex-col gap-2 p-4">
+            {children}
+          </div>
+        </div>
+      </SidebarInset>
+    </SidebarProvider>
   );
 }
