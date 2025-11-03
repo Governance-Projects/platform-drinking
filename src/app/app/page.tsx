@@ -10,7 +10,7 @@ import {
 } from "~/components/ui/card";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
-import { api } from "~/trpc/react";
+
 import Link from "next/link";
 import {
   MapPin,
@@ -103,26 +103,6 @@ export default function DashboardPage() {
   return (
     <div className="bg-background w-full">
       <div className="w-full space-y-8">
-        <div className="flex flex-col gap-4 md:flex-row md:items-center md:justify-between">
-          <div>
-            <h1 className="text-3xl font-bold tracking-tight">Dashboard</h1>
-            <p className="text-muted-foreground">
-              Visão geral do sistema de bebedouros
-            </p>
-          </div>
-          <div className="flex gap-2">
-            <Button asChild>
-              <Link href="/app/bebedouros/novo">
-                <Plus className="mr-2 h-4 w-4" />
-                Novo Bebedouro
-              </Link>
-            </Button>
-            <Button variant="outline" asChild>
-              <Link href="/app/bebedouros">Ver Todos</Link>
-            </Button>
-          </div>
-        </div>
-
         <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
           {statCards.map((stat, index) => {
             const Icon = stat.icon;

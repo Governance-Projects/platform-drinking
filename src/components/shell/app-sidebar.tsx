@@ -1,4 +1,4 @@
-import { Home, Inbox } from "lucide-react";
+import { ChartColumnDecreasing, Inbox } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -14,9 +14,9 @@ import {
 
 const items = [
   {
-    title: "Home",
+    title: "Dashboard",
     url: "/app",
-    icon: Home,
+    icon: ChartColumnDecreasing,
   },
   {
     title: "Bebedouros",
