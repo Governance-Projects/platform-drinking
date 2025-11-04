@@ -19,10 +19,9 @@ import {
   CheckCircle,
   XCircle,
   Wrench,
-  Plus,
-  TrendingUp,
   Calendar,
 } from "lucide-react";
+import { ChartAreaInteractive } from "~/components/app/dashboard/chart-card";
 
 interface StatCard {
   title: string;
@@ -35,14 +34,14 @@ interface StatCard {
 export default function DashboardPage() {
   const statCards: StatCard[] = [
     {
-      title: "Total de Bebedouros",
+      title: "Total",
       value: 0,
       description: "Bebedouros cadastrados no sistema",
       icon: MapPin,
       variant: "default",
     },
     {
-      title: "Bebedouros Ativos",
+      title: "Em espera",
       value: 0,
       description: "Funcionando normalmente",
       icon: CheckCircle,
@@ -56,7 +55,7 @@ export default function DashboardPage() {
       variant: "warning",
     },
     {
-      title: "Inativos",
+      title: "Concluidos",
       value: 0,
       description: "Fora de funcionamento",
       icon: XCircle,
@@ -127,20 +126,7 @@ export default function DashboardPage() {
           })}
         </div>
 
-        <Card>
-          <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <TrendingUp className="h-5 w-5" />
-              Atividade Recente
-            </CardTitle>
-            <CardDescription>
-              Bebedouros adicionados nos últimos 30 dias:{" "}
-              <span className="text-foreground font-semibold">
-                {false ? "..." : 0}
-              </span>
-            </CardDescription>
-          </CardHeader>
-        </Card>
+        <ChartAreaInteractive />
 
         <div className="grid gap-6 lg:grid-cols-2">
           {/* Status Distribution */}
@@ -259,66 +245,6 @@ export default function DashboardPage() {
             </CardContent>
           </Card>
         </div>
-
-        <Card>
-          <CardHeader>
-            <CardTitle>Ações Rápidas</CardTitle>
-            <CardDescription>
-              Acesso rápido às principais funcionalidades
-            </CardDescription>
-          </CardHeader>
-          <CardContent>
-            <div className="grid gap-4 md:grid-cols-3">
-              <Button
-                asChild
-                variant="outline"
-                className="h-auto flex-col gap-2 p-6"
-              >
-                <Link href="/app/bebedouros/novo">
-                  <Plus className="h-6 w-6" />
-                  <div className="text-center">
-                    <div className="font-medium">Adicionar Bebedouro</div>
-                    <div className="text-muted-foreground text-xs">
-                      Cadastrar novo bebedouro
-                    </div>
-                  </div>
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="h-auto flex-col gap-2 p-6"
-              >
-                <Link href="/app/bebedouros">
-                  <MapPin className="h-6 w-6" />
-                  <div className="text-center">
-                    <div className="font-medium">Ver Bebedouros</div>
-                    <div className="text-muted-foreground text-xs">
-                      Lista completa
-                    </div>
-                  </div>
-                </Link>
-              </Button>
-
-              <Button
-                asChild
-                variant="outline"
-                className="h-auto flex-col gap-2 p-6"
-              >
-                <Link href="/api-docs">
-                  <Activity className="h-6 w-6" />
-                  <div className="text-center">
-                    <div className="font-medium">Documentação API</div>
-                    <div className="text-muted-foreground text-xs">
-                      Guia da API
-                    </div>
-                  </div>
-                </Link>
-              </Button>
-            </div>
-          </CardContent>
-        </Card>
       </div>
     </div>
   );
