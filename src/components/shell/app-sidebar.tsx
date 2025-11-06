@@ -13,6 +13,7 @@ import {
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
 import { Card, CardContent } from "~/components/ui/card";
+import { useSession } from "~/server/auth/client";
 
 const items = [
   {
@@ -28,6 +29,8 @@ const items = [
 ];
 
 export function AppSidebar() {
+  const { data: session } = useSession();
+
   return (
     <Sidebar className="text-white">
       <SidebarHeader>
@@ -63,10 +66,10 @@ export function AppSidebar() {
               </div>
               <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
                 <p className="text-foreground truncate text-sm font-medium">
-                  João Silva
+                  {session?.user?.name ?? "Usuário"}
                 </p>
                 <p className="text-muted-foreground truncate text-xs">
-                  joao.silva@example.com
+                  {session?.user?.email ?? ""}
                 </p>
               </div>
             </div>

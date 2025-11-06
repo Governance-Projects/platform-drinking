@@ -32,7 +32,7 @@ export default function ApiDocsPage() {
           <InfoCard
             icon={Shield}
             title="Segurança"
-            description="Autenticação JWT com NextAuth.js e validação com Zod."
+            description="Autenticação com Better Auth (email/senha) e validação com Zod."
             variant="default"
           />
           <InfoCard
@@ -92,19 +92,19 @@ export default function ApiDocsPage() {
           <div>
             <h3 className="mb-3 text-lg font-semibold">Obter Token</h3>
             <p className="text-muted-foreground mb-3">
-              O token JWT é obtido através do sistema de autenticação
-              NextAuth.js. Após o login, o token estará disponível na sessão do
-              usuário.
+              A autenticação é feita através do Better Auth usando email e senha.
+              Após o login, a sessão estará disponível através do hook useSession.
             </p>
             <CodeBlock language="javascript" title="Exemplo Next.js">
-              {`import { useSession } from "next-auth/react";
+              {`import { useSession } from "~/server/auth/client";
 
 function MyComponent() {
   const { data: session } = useSession();
   
   if (session?.user) {
-    // Token disponível em session.accessToken
-    const token = session.accessToken;
+    // Dados do usuário disponíveis em session.user
+    const userId = session.user.id;
+    const email = session.user.email;
   }
 }`}
             </CodeBlock>

@@ -70,7 +70,8 @@ model Sink {
     sinkMaintances SinkMaintance[]
 }
 
-// Necessary for Next auth
+// Better Auth models
+// Account model mantido para compatibilidade, mas não será usado com credentials
 model Account {
     id                       String  @id @default(cuid())
     userId                   String
@@ -110,6 +111,7 @@ model User {
     emailVerified DateTime?
     image         String?
     registration  String?
+    password      String?   // Hash da senha para better-auth credentials
 
     role UserRole @default(ADMIN)
 

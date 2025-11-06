@@ -320,7 +320,7 @@ export function generateManualOpenApiDocument() {
           scheme: "bearer",
           bearerFormat: "JWT",
           description:
-            "Token de autenticação JWT obtido através do NextAuth.js",
+            "Token de autenticação JWT obtido através do Better Auth",
         },
       },
       schemas: {

@@ -11,7 +11,7 @@ import { initTRPC, TRPCError } from "@trpc/server";
 import superjson from "superjson";
 import { ZodError } from "zod";
 
-import { auth } from "~/server/auth";
+import { auth } from "~/server/auth/config";
 import { db } from "~/server/db";
 
 /**
@@ -27,11 +27,25 @@ import { db } from "~/server/db";
  * @see https://trpc.io/docs/server/context
  */
 export const createTRPCContext = async (opts: { headers: Headers }) => {
-  const session = await auth();
+  // Obter sessão do better-auth
+  const sessionResponse = await auth.api.getSession({
+    headers: opts.headers,
+  });
+
+  const session = sessionResponse?.data?.session ?? null;
 
   return {
     db,
-    session,
+    session: session
+      ? {
+          user: {
+            id: session.user.id,
+            name: session.user.name ?? null,
+            email: session.user.email ?? null,
+            image: session.user.image ?? null,
+          },
+        }
+      : null,
     ...opts,
   };
 };
