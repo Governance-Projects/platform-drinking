@@ -1,3 +1,5 @@
+"use client";
+
 import { ChartColumnDecreasing, Inbox, User } from "lucide-react";
 import Image from "next/image";
 

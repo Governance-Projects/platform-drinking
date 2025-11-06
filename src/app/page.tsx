@@ -9,11 +9,18 @@ export default function HomePage() {
           Drinking App
         </h1>
 
-        <Link href="/app/bebedouros">
-          <Button size="lg" className="px-8 py-4 text-lg">
-            Acessar Bebedouros
-          </Button>
-        </Link>
+        <div className="flex flex-col gap-4 sm:flex-row sm:justify-center">
+          <Link href="/login">
+            <Button size="lg" className="px-8 py-4 text-lg">
+              Fazer Login
+            </Button>
+          </Link>
+          <Link href="/app/bebedouros">
+            <Button size="lg" variant="outline" className="px-8 py-4 text-lg">
+              Acessar Bebedouros
+            </Button>
+          </Link>
+        </div>
       </div>
     </div>
   );
