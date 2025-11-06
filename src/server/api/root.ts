@@ -1,5 +1,6 @@
 import { sinkRouter } from "~/server/api/routers/bebedouro";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
+import { dashboardRouter } from "./routers/dahsboard";
 
 /**
  * This is the primary router for your server.
@@ -8,6 +9,7 @@ import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
  */
 export const appRouter = createTRPCRouter({
   bebedouro: sinkRouter,
+  dashboard: dashboardRouter,
 });
 
 // export type definition of API

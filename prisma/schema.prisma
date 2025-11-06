@@ -14,6 +14,44 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model UserConfiguration {
+    id String @id @default(cuid())
+
+    notifications Json
+    security      Json
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+}
+
+model SinkMaintanceService {
+    id Int @id @default(autoincrement())
+
+    name String
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    sinkMaintances SinkMaintance[]
+}
+
+model SinkMaintance {
+    id String @id @default(cuid())
+
+    responsableId String
+    responsable   User   @relation(fields: [responsableId], references: [id])
+
+    sinkId String
+    sink   Sink   @relation(fields: [sinkId], references: [id])
+
+    observations String? @db.VarChar(255)
+
+    createdAt DateTime @default(now())
+    updatedAt DateTime @default(now()) @updatedAt
+
+    sinkMaintanceServices SinkMaintanceService[]
+}
+
 enum SinkStatus {
     ACTIVE
     INACTIVE
@@ -27,8 +65,9 @@ model Sink {
     description String
     status      SinkStatus @default(ACTIVE)
 
-    createdAt DateTime @default(now())
-    updatedAt DateTime @default(now()) @updatedAt
+    createdAt      DateTime        @default(now())
+    updatedAt      DateTime        @default(now()) @updatedAt
+    sinkMaintances SinkMaintance[]
 }
 
 // Necessary for Next auth
@@ -65,8 +104,11 @@ model User {
     email         String?   @unique
     emailVerified DateTime?
     image         String?
-    accounts      Account[]
-    sessions      Session[]
+    registration  String?
+
+    accounts       Account[]
+    sessions       Session[]
+    sinkMaintances SinkMaintance[]
 }
 
 model VerificationToken {

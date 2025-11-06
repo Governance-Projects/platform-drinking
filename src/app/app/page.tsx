@@ -8,6 +8,7 @@ import {
   CardHeader,
   CardTitle,
 } from "~/components/ui/card";
+import { Skeleton } from "~/components/ui/skeleton";
 import { Badge } from "~/components/ui/badge";
 import { Button } from "~/components/ui/button";
 
@@ -23,43 +24,40 @@ import {
 } from "lucide-react";
 import { ChartAreaInteractive } from "~/components/app/dashboard/chart-card";
 
+import { api } from "~/trpc/react";
+
 interface StatCard {
   title: string;
-  value: string | number;
+  value: number;
   description: string;
   icon: React.ComponentType<{ className?: string }>;
   variant?: "default" | "success" | "warning" | "destructive";
 }
 
 export default function DashboardPage() {
+  const dashboardQuery = api.dashboard.list.useQuery();
+
   const statCards: StatCard[] = [
     {
       title: "Total",
-      value: 0,
+      value: dashboardQuery.data?.totalSinks ?? 0,
       description: "Bebedouros cadastrados no sistema",
       icon: MapPin,
       variant: "default",
     },
     {
-      title: "Em espera",
-      value: 0,
-      description: "Funcionando normalmente",
-      icon: CheckCircle,
-      variant: "success",
-    },
-    {
       title: "Em Manutenção",
-      value: 0,
+      value: dashboardQuery.data?.inMaintanceSinks ?? 0,
       description: "Precisam de reparo",
       icon: Wrench,
       variant: "warning",
     },
     {
-      title: "Concluidos",
-      value: 0,
-      description: "Fora de funcionamento",
+      title: "Ativos",
+      value: dashboardQuery.data?.activeSinks ?? 0,
+      description: "Em funcionamento",
       icon: XCircle,
-      variant: "destructive",
+      variant: "success",
     },
   ];
 
@@ -102,28 +100,44 @@ export default function DashboardPage() {
   return (
     <div className="bg-background w-full">
       <div className="w-full space-y-8">
-        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-4">
-          {statCards.map((stat, index) => {
-            const Icon = stat.icon;
-            return (
-              <Card key={index}>
-                <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
-                  <CardTitle className="text-sm font-medium">
-                    {stat.title}
-                  </CardTitle>
-                  <Icon className="text-muted-foreground h-4 w-4" />
-                </CardHeader>
-                <CardContent>
-                  <div className="text-2xl font-bold">
-                    {false ? "..." : stat.value}
-                  </div>
-                  <p className="text-muted-foreground text-xs">
-                    {stat.description}
-                  </p>
-                </CardContent>
-              </Card>
-            );
-          })}
+        <div className="grid gap-6 md:grid-cols-2 lg:grid-cols-3">
+          {dashboardQuery.isLoading
+            ? statCards.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <Card key={index}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        {stat.title}
+                      </CardTitle>
+                      <Icon className="text-muted-foreground h-4 w-4" />
+                    </CardHeader>
+                    <CardContent>
+                      <Skeleton className="mb-2 h-8 w-20" />
+                      <Skeleton className="h-4 w-48" />
+                    </CardContent>
+                  </Card>
+                );
+              })
+            : statCards.map((stat, index) => {
+                const Icon = stat.icon;
+                return (
+                  <Card key={index}>
+                    <CardHeader className="flex flex-row items-center justify-between space-y-0 pb-2">
+                      <CardTitle className="text-sm font-medium">
+                        {stat.title}
+                      </CardTitle>
+                      <Icon className="text-muted-foreground h-4 w-4" />
+                    </CardHeader>
+                    <CardContent>
+                      <div className="text-2xl font-bold">{stat.value}</div>
+                      <p className="text-muted-foreground text-xs">
+                        {stat.description}
+                      </p>
+                    </CardContent>
+                  </Card>
+                );
+              })}
         </div>
 
         <ChartAreaInteractive />
