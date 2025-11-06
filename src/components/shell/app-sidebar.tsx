@@ -1,9 +1,10 @@
-import { ChartColumnDecreasing, Inbox } from "lucide-react";
+import { ChartColumnDecreasing, Inbox, User } from "lucide-react";
 import Image from "next/image";
 
 import {
   Sidebar,
   SidebarContent,
+  SidebarFooter,
   SidebarGroup,
   SidebarGroupContent,
   SidebarHeader,
@@ -11,6 +12,7 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
+import { Card, CardContent } from "~/components/ui/card";
 
 const items = [
   {
@@ -52,6 +54,25 @@ export function AppSidebar() {
           </SidebarGroupContent>
         </SidebarGroup>
       </SidebarContent>
+      <SidebarFooter>
+        <Card className="border-border/40 bg-white/80 backdrop-blur-sm">
+          <CardContent className="p-2">
+            <div className="flex items-center gap-2">
+              <div className="bg-primary/20 flex h-10 w-10 items-center justify-center rounded-full">
+                <User className="text-primary h-5 w-5" />
+              </div>
+              <div className="flex flex-1 flex-col gap-0.5 overflow-hidden">
+                <p className="text-foreground truncate text-sm font-medium">
+                  João Silva
+                </p>
+                <p className="text-muted-foreground truncate text-xs">
+                  joao.silva@example.com
+                </p>
+              </div>
+            </div>
+          </CardContent>
+        </Card>
+      </SidebarFooter>
     </Sidebar>
   );
 }
