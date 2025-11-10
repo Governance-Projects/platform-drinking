@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartColumnDecreasing, Inbox } from "lucide-react";
+import { ChartColumnDecreasing, Inbox, Wrench } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -26,6 +26,11 @@ const items = [
     title: "Bebedouros",
     url: "/app/bebedouros",
     icon: Inbox,
+  },
+  {
+    title: "Operação",
+    url: "/app/operacao",
+    icon: Wrench,
   },
 ];
 
