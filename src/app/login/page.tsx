@@ -1,10 +1,13 @@
 "use client";
 
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { signIn } from "~/server/auth/client";
-import { loginValidator, type LoginValidator } from "~/utils/validators/auth/login";
+import { signIn, signUp } from "~/server/auth/client";
+import {
+  loginValidator,
+  type LoginValidator,
+} from "~/utils/validators/auth/login";
 import { Button } from "~/components/ui/button";
 import { Input } from "~/components/ui/input";
 import {
@@ -27,6 +30,7 @@ import { toast } from "sonner";
 
 export default function LoginPage() {
   const router = useRouter();
+  const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
 
   const form = useForm<LoginValidator>({
@@ -46,18 +50,21 @@ export default function LoginPage() {
       });
 
       if (result?.error) {
-        toast.error(result.error.message || "Email ou senha inválidos");
+        toast.error(result.error.message ?? "Email ou senha inválidos");
         return;
       }
 
       if (result?.data) {
         toast.success("Login realizado com sucesso!");
-        router.push("/app");
+        const redirectUrl = searchParams.get("redirect") ?? "/app";
+        router.push(redirectUrl);
         router.refresh();
       }
     } catch (error) {
       const errorMessage =
-        error instanceof Error ? error.message : "Erro ao fazer login. Tente novamente.";
+        error instanceof Error
+          ? error.message
+          : "Erro ao fazer login. Tente novamente.";
       toast.error(errorMessage);
       console.error("Login error:", error);
     } finally {
@@ -113,12 +120,21 @@ export default function LoginPage() {
                   </FormItem>
                 )}
               />
-              <Button
-                type="submit"
-                className="w-full"
-                disabled={isLoading}
-              >
+              <Button type="submit" className="w-full" disabled={isLoading}>
                 {isLoading ? "Entrando..." : "Entrar"}
+              </Button>
+
+              <Button
+                type="button"
+                onClick={async () =>
+                  await signUp.email({
+                    email: "rianlandim@unifapce.com.br",
+                    password: "teste123!",
+                    name: "Rian Landim",
+                  })
+                }
+              >
+                Cadastrar
               </Button>
             </form>
           </Form>
@@ -127,4 +143,3 @@ export default function LoginPage() {
     </div>
   );
 }
-
