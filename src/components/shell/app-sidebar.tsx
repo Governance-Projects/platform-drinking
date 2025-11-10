@@ -1,6 +1,6 @@
 "use client";
 
-import { ChartColumnDecreasing, Inbox, LogOut, User } from "lucide-react";
+import { ChartColumnDecreasing, Inbox } from "lucide-react";
 import Image from "next/image";
 
 import {
@@ -14,8 +14,6 @@ import {
   SidebarMenuButton,
   SidebarMenuItem,
 } from "~/components/ui/sidebar";
-import { Card, CardContent } from "~/components/ui/card";
-import { useSession, signOut } from "~/server/auth/client";
 import { SessionCard } from "./sidebar/session-card";
 
 const items = [
@@ -59,14 +57,6 @@ export function AppSidebar() {
         </SidebarGroup>
       </SidebarContent>
       <SidebarFooter>
-        <SidebarMenuItem>
-          <SidebarMenuButton
-            onClick={() => signOut()}
-            className="flex flex-row items-center justify-start"
-          >
-            Sair <LogOut />
-          </SidebarMenuButton>
-        </SidebarMenuItem>
         <SessionCard />
       </SidebarFooter>
     </Sidebar>

@@ -32,17 +32,14 @@ export const createTRPCContext = async (opts: { headers: Headers }) => {
     headers: opts.headers,
   });
 
-  const session = sessionResponse?.data?.session ?? null;
+  const session = sessionResponse?.session;
 
   return {
     db,
     session: session
       ? {
           user: {
-            id: session.user.id,
-            name: session.user.name ?? null,
-            email: session.user.email ?? null,
-            image: session.user.image ?? null,
+            id: session.id,
           },
         }
       : null,

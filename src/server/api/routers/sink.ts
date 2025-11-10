@@ -1,8 +1,9 @@
-import { createTRPCRouter, publicProcedure } from "~/server/api/trpc";
+import z from "zod";
+import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
 import { createSinkValidator } from "~/utils/validators/sink/create-sink";
 
 export const sinkRouter = createTRPCRouter({
-  create: publicProcedure
+  create: protectedProcedure
     .input(createSinkValidator)
     .mutation(async ({ ctx, input }) => {
       const sink = await ctx.db.sink.create({
@@ -10,5 +11,13 @@ export const sinkRouter = createTRPCRouter({
       });
 
       return sink;
+    }),
+
+  list: protectedProcedure
+    .input(z.object({}).optional())
+    .query(async ({ ctx }) => {
+      const sinks = await ctx.db.sink.findMany();
+
+      return sinks;
     }),
 });
