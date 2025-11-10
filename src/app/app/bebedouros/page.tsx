@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { MapPin, Plus } from "lucide-react";
+import { CircleCheck, MapPin, Plus, Wrench, XCircle } from "lucide-react";
 
 import { Button } from "~/components/ui/button";
 import {
@@ -16,11 +16,44 @@ import { Alert, AlertDescription } from "~/components/ui/alert";
 import { DataTableSkeleton } from "~/components/ui/data-table-skeleton";
 import { SinkDataTable } from "./data-table";
 import { api } from "~/trpc/react";
+import type { StatCardProps } from "~/utils/types/stat-card-type";
+import { StatCard } from "~/components/app/stat-card";
 
 export default function BebedourosPage() {
   const sinkQuery = api.sink.list.useQuery();
 
-  const sinksLength = sinkQuery.data?.length ?? 0;
+  const sinksLength = sinkQuery.data?.table.length ?? 0;
+
+  const statsCards: StatCardProps[] = [
+    {
+      title: "Total",
+      value: sinkQuery.data?.table.length ?? 0,
+      description: "Bebedouros cadastrados no sistema",
+      icon: MapPin,
+      variant: "default",
+    },
+    {
+      title: "Em Manutenção",
+      value: sinkQuery.data?.inMaintance ?? 0,
+      description: "Precisam de reparo",
+      icon: Wrench,
+      variant: "warning",
+    },
+    {
+      title: "Ativos",
+      value: sinkQuery.data?.activies ?? 0,
+      description: "Em funcionamento",
+      icon: CircleCheck,
+      variant: "success",
+    },
+    {
+      title: "Inativos",
+      value: sinkQuery.data?.inactivies ?? 0,
+      description: "Fora de operacão",
+      icon: XCircle,
+      variant: "destructive",
+    },
+  ];
 
   return (
     <div className="bg-background w-full">
@@ -41,61 +74,15 @@ export default function BebedourosPage() {
 
         {/* Estatísticas */}
         <div className="mb-8 grid grid-cols-1 gap-4 md:grid-cols-4">
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="h-12 w-12 rounded-lg bg-green-100 p-3 dark:bg-green-900">
-                  <MapPin className="h-6 w-6 text-green-600 dark:text-green-400" />
-                </div>
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">{sinksLength}</p>
-                  <p className="text-muted-foreground text-sm">Total</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="h-12 w-12 rounded-lg bg-green-100 p-3 dark:bg-green-900">
-                  <div className="h-6 w-6 rounded-full bg-green-500"></div>
-                </div>
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">{0}</p>
-                  <p className="text-muted-foreground text-sm">Ativos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="h-12 w-12 rounded-lg bg-yellow-100 p-3 dark:bg-yellow-900">
-                  <div className="h-6 w-6 rounded-full bg-yellow-500"></div>
-                </div>
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">{0}</p>
-                  <p className="text-muted-foreground text-sm">Manutenção</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
-
-          <Card>
-            <CardContent className="p-6">
-              <div className="flex items-center">
-                <div className="h-12 w-12 rounded-lg bg-red-100 p-3 dark:bg-red-900">
-                  <div className="h-6 w-6 rounded-full bg-red-500"></div>
-                </div>
-                <div className="ml-4">
-                  <p className="text-2xl font-bold">{0}</p>
-                  <p className="text-muted-foreground text-sm">Inativos</p>
-                </div>
-              </div>
-            </CardContent>
-          </Card>
+          {statsCards.map((stat) => (
+            <StatCard
+              key={stat.title}
+              icon={stat.icon}
+              title={stat.title}
+              value={stat.value}
+              description={stat.description}
+            />
+          ))}
         </div>
 
         <Card>
@@ -127,7 +114,7 @@ export default function BebedourosPage() {
                 </AlertDescription>
               </Alert>
             ) : (
-              <SinkDataTable data={sinkQuery.data ?? []} />
+              <SinkDataTable data={sinkQuery.data?.table ?? []} />
             )}
           </CardContent>
         </Card>

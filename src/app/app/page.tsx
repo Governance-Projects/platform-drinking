@@ -25,19 +25,12 @@ import {
 import { ChartAreaInteractive } from "~/components/app/dashboard/chart-card";
 
 import { api } from "~/trpc/react";
-
-interface StatCard {
-  title: string;
-  value: number;
-  description: string;
-  icon: React.ComponentType<{ className?: string }>;
-  variant?: "default" | "success" | "warning" | "destructive";
-}
+import type { StatCardProps } from "~/utils/types/stat-card-type";
 
 export default function DashboardPage() {
   const dashboardQuery = api.dashboard.list.useQuery();
 
-  const statCards: StatCard[] = [
+  const statCards: StatCardProps[] = [
     {
       title: "Total",
       value: dashboardQuery.data?.totalSinks ?? 0,

@@ -18,6 +18,29 @@ export const sinkRouter = createTRPCRouter({
     .query(async ({ ctx }) => {
       const sinks = await ctx.db.sink.findMany();
 
-      return sinks;
+      const activies = await ctx.db.sink.count({
+        where: {
+          status: "ACTIVE",
+        },
+      });
+
+      const inactivies = await ctx.db.sink.count({
+        where: {
+          status: "INACTIVE",
+        },
+      });
+
+      const inMaintance = await ctx.db.sink.count({
+        where: {
+          status: "MAINTANCE",
+        },
+      });
+
+      return {
+        table: sinks,
+        activies,
+        inactivies,
+        inMaintance,
+      };
     }),
 });
