@@ -13,6 +13,7 @@ import {
 } from "~/components/ui/card";
 
 import { Alert, AlertDescription } from "~/components/ui/alert";
+import { DataTableSkeleton } from "~/components/ui/data-table-skeleton";
 import { SinkDataTable } from "./data-table";
 import { api } from "~/trpc/react";
 
@@ -116,7 +117,9 @@ export default function BebedourosPage() {
             </div>
           </CardHeader>
           <CardContent>
-            {sinksLength === 0 ? (
+            {sinkQuery.isLoading ? (
+              <DataTableSkeleton columnCount={6} rowCount={5} />
+            ) : sinksLength === 0 ? (
               <Alert>
                 <MapPin className="h-4 w-4" />
                 <AlertDescription>
