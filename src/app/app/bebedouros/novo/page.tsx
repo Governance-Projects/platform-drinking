@@ -43,7 +43,7 @@ export default function NovoBebedouroPage() {
     },
   });
 
-  const createSinkMutation = api.bebedouro.create.useMutation();
+  const createSinkMutation = api.sink.create.useMutation();
 
   const submit: SubmitHandler<CreateSinkValidator> = (data) => {
     toast.promise(() => createSinkMutation.mutateAsync(data), {

@@ -1,4 +1,4 @@
-import { sinkRouter } from "~/server/api/routers/bebedouro";
+import { sinkRouter } from "~/server/api/routers/sink";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { dashboardRouter } from "./routers/dahsboard";
 
@@ -8,7 +8,7 @@ import { dashboardRouter } from "./routers/dahsboard";
  * All routers added in /api/routers should be manually added here.
  */
 export const appRouter = createTRPCRouter({
-  bebedouro: sinkRouter,
+  sink: sinkRouter,
   dashboard: dashboardRouter,
 });
 
