@@ -17,8 +17,8 @@ import {
   useReactTable,
   type ColumnFiltersState,
   type SortingState,
-  type VisibilityState,
 } from "@tanstack/react-table";
+import { useTableColumnVisibility } from "~/hooks/use-table-column-visibility";
 import { Input } from "~/components/ui/input";
 import {
   DropdownMenu,
@@ -32,7 +32,7 @@ import { ChevronDown, Search } from "lucide-react";
 import { columns } from "./colums";
 import type { RouterOutputs } from "~/trpc/react";
 
-type Sink = RouterOutputs["sink"]["list"][number];
+type Sink = RouterOutputs["sink"]["list"]["table"][number];
 
 interface SinkDataTableProps {
   data: Sink[];
@@ -41,7 +41,8 @@ interface SinkDataTableProps {
 export function SinkDataTable({ data }: SinkDataTableProps) {
   const [sorting, setSorting] = useState<SortingState>([]);
   const [columnFilters, setColumnFilters] = useState<ColumnFiltersState>([]);
-  const [columnVisibility, setColumnVisibility] = useState<VisibilityState>({});
+  const [columnVisibility, setColumnVisibility] =
+    useTableColumnVisibility("bebedouros");
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
 
@@ -61,9 +62,9 @@ export function SinkDataTable({ data }: SinkDataTableProps) {
       const sink = row.original;
 
       return (
-        sink.name.toLowerCase().includes(search) ||
-        sink.location.toLowerCase().includes(search) ||
-        sink.description.toLowerCase().includes(search) ||
+        sink.name.toLowerCase().includes(search) ??
+        sink.location.toLowerCase().includes(search) ??
+        sink.description.toLowerCase().includes(search) ??
         sink.status.toLowerCase().includes(search)
       );
     },
