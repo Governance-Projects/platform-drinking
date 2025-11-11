@@ -101,7 +101,7 @@ export function CreateMaintenanceDialog({
           Nova Manutenção
         </Button>
       </SheetTrigger>
-      <SheetContent side="right" className="w-full sm:max-w-md">
+      <SheetContent side="right" className="w-full p-2 sm:max-w-md">
         <SheetHeader>
           <SheetTitle>Nova Manutenção</SheetTitle>
           <SheetDescription>

@@ -9,9 +9,8 @@ import type {
 } from "~/utils/types/maintenance-kanban";
 import { KanbanColumn } from "./kanban-column";
 import { CreateMaintenanceDialog } from "./create-maintenance-dialog";
-import { getInitialKanbanColumns } from "~/utils/mocks/maintenance-mock-data";
+import { api } from "~/trpc/react";
 
-// Cores para cada coluna (inspirado no Trello)
 const columnColors = {
   [MaintenanceStatus.PENDING]: "#f59e0b", // amber-500
   [MaintenanceStatus.IN_PROGRESS]: "#3b82f6", // blue-500
@@ -24,10 +23,24 @@ const columnTitles = {
   [MaintenanceStatus.COMPLETED]: "Concluído",
 };
 
+const getInitialKanbanColumns = (): KanbanColumns => ({
+  [MaintenanceStatus.PENDING]: [],
+  [MaintenanceStatus.IN_PROGRESS]: [],
+  [MaintenanceStatus.COMPLETED]: [],
+});
+
 export function MaintenanceKanban() {
+  const sinksMaintanceQuery = api.operation.list.useQuery();
+
   const [columns, setColumns] = useState<KanbanColumns>(
     getInitialKanbanColumns,
   );
+
+  useEffect(() => {
+    if (sinksMaintanceQuery.data) {
+      setColumns(sinksMaintanceQuery.data);
+    }
+  }, [sinksMaintanceQuery.data]);
 
   useEffect(() => {
     return monitorForElements({
@@ -121,7 +134,7 @@ export function MaintenanceKanban() {
       </div>
 
       {/* Kanban Board */}
-      <div className="flex min-h-[600px] gap-4 overflow-x-auto pb-4">
+      <div className="flex min-h-[600px] justify-evenly gap-4 overflow-x-auto pb-4">
         {Object.values(MaintenanceStatus).map((status) => (
           <KanbanColumn
             key={status}
