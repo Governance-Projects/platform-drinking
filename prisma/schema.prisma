@@ -14,6 +14,19 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
+model SinkFeedback {
+    id        String       @id @default(cuid())
+    sinkId    String
+    sink      Sink         @relation(fields: [sinkId], references: [id], onDelete: Cascade)
+    type      FeedbackType
+    message   String       @db.Text
+    rating    Int? // 1-5 estrelas (opcional)
+    name      String? // Nome opcional do usuário
+    email     String? // Email opcional do usuário
+    createdAt DateTime     @default(now())
+    updatedAt DateTime     @default(now()) @updatedAt
+}
+
 model UserConfiguration {
     id String @id @default(cuid())
 
@@ -35,6 +48,12 @@ model SinkMaintanceService {
     sinkMaintances SinkMaintance[]
 }
 
+enum SinkMaintanceStatus {
+    PENDING
+    IN_PROGRESS
+    CONCLUDED
+}
+
 model SinkMaintance {
     id String @id @default(cuid())
 
@@ -44,7 +63,8 @@ model SinkMaintance {
     sinkId String
     sink   Sink   @relation(fields: [sinkId], references: [id])
 
-    observations String? @db.VarChar(255)
+    observations String?             @db.VarChar(255)
+    status       SinkMaintanceStatus @default(PENDING)
 
     createdAt DateTime @default(now())
     updatedAt DateTime @default(now()) @updatedAt
@@ -68,6 +88,14 @@ model Sink {
     createdAt      DateTime        @default(now())
     updatedAt      DateTime        @default(now()) @updatedAt
     sinkMaintances SinkMaintance[]
+    feedbacks      SinkFeedback[]
+}
+
+enum FeedbackType {
+    PROBLEM
+    SUGGESTION
+    COMPLIMENT
+    OTHER
 }
 
 // Better Auth models

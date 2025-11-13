@@ -165,7 +165,8 @@ export default function LoginPage() {
               {env.NODE_ENV === "development" && (
                 <Button
                   type="button"
-                  className="w-full bg-red-600"
+                  className="w-full"
+                  variant="destructive"
                   isLoading={isLoading}
                   loadingMessage="Entrando..."
                   onClick={createDevAccountAndLogin}

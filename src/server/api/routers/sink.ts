@@ -1,6 +1,7 @@
 import z from "zod";
-import { createTRPCRouter, protectedProcedure } from "~/server/api/trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
 import { createSinkValidator } from "~/utils/validators/sink/create-sink";
+import { createFeedbackValidator } from "~/utils/validators/sink/create-feedback";
 
 export const sinkRouter = createTRPCRouter({
   create: protectedProcedure
@@ -42,5 +43,54 @@ export const sinkRouter = createTRPCRouter({
         inactivies,
         inMaintance,
       };
+    }),
+
+  getById: publicProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const sink = await ctx.db.sink.findUnique({
+        where: { id: input.id },
+        select: {
+          id: true,
+          name: true,
+          location: true,
+          description: true,
+          status: true,
+          createdAt: true,
+        },
+      });
+
+      if (!sink) {
+        throw new Error("Bebedouro não encontrado");
+      }
+
+      return sink;
+    }),
+
+  createFeedback: publicProcedure
+    .input(createFeedbackValidator)
+    .mutation(async ({ ctx, input }) => {
+      // Verificar se o bebedouro existe
+      const sink = await ctx.db.sink.findUnique({
+        where: { id: input.sinkId },
+      });
+
+      if (!sink) {
+        throw new Error("Bebedouro não encontrado");
+      }
+
+      // Criar o feedback
+      const feedback = await ctx.db.sinkFeedback.create({
+        data: {
+          sinkId: input.sinkId,
+          type: input.type,
+          message: input.message,
+          rating: input.rating,
+          name: input.name || null,
+          email: input.email || null,
+        },
+      });
+
+      return feedback;
     }),
 });
