@@ -9,8 +9,8 @@ export default defineConfig({
   },
   e2e: {
     baseUrl: "http://localhost:3000/",
-    defaultBrowser: "firefox",
-    setupNodeEvents(on, _config) {
+    defaultBrowser: "electron",
+    setupNodeEvents(_config) {
       // make the configuration
     },
   },
