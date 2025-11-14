@@ -1,12 +1,23 @@
 import { createColumnHelper } from "@tanstack/react-table";
 import type { RouterOutputs } from "~/trpc/react";
 import { Badge } from "~/components/ui/badge";
-import { MapPin, FileText } from "lucide-react";
+import { MapPin, FileText, MoreVertical, QrCode } from "lucide-react";
 import { cn } from "~/lib/utils";
+import {
+  DropdownMenu,
+  DropdownMenuContent,
+  DropdownMenuItem,
+  DropdownMenuTrigger,
+} from "~/components/ui/dropdown-menu";
+import { Button } from "~/components/ui/button";
 
-type Sink = RouterOutputs["sink"]["list"][number];
+type Sink = RouterOutputs["sink"]["list"]["table"][number];
 
 const columnHelper = createColumnHelper<Sink>();
+
+type ColumnsProps = {
+  onViewQrCode: (sink: Sink) => void;
+};
 
 const formatDate = (date: Date | string) => {
   return new Date(date).toLocaleDateString("pt-BR", {
@@ -59,7 +70,7 @@ const getStatusColor = (status: string) => {
   }
 };
 
-export const columns = [
+export const createColumns = ({ onViewQrCode }: ColumnsProps) => [
   columnHelper.accessor("name", {
     header: "Nome",
     cell: (info) => <div className="font-medium">{info.getValue()}</div>,
@@ -126,5 +137,28 @@ export const columns = [
       </div>
     ),
     enableSorting: true,
+  }),
+  columnHelper.display({
+    id: "actions",
+    header: "Ações",
+    cell: (info) => {
+      const sink = info.row.original;
+      return (
+        <DropdownMenu>
+          <DropdownMenuTrigger asChild>
+            <Button variant="ghost" size="icon">
+              <MoreVertical className="h-4 w-4" />
+              <span className="sr-only">Abrir menu</span>
+            </Button>
+          </DropdownMenuTrigger>
+          <DropdownMenuContent align="end">
+            <DropdownMenuItem onClick={() => onViewQrCode(sink)}>
+              <QrCode className="mr-2 h-4 w-4" />
+              Visualizar QR Code
+            </DropdownMenuItem>
+          </DropdownMenuContent>
+        </DropdownMenu>
+      );
+    },
   }),
 ];

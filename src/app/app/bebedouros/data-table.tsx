@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useMemo } from "react";
 import {
   Table,
   TableBody,
@@ -29,8 +29,9 @@ import {
 import { Button } from "~/components/ui/button";
 import { ChevronDown, Search } from "lucide-react";
 
-import { columns } from "./colums";
+import { createColumns } from "./colums";
 import type { RouterOutputs } from "~/trpc/react";
+import { QrCodeModal } from "~/components/app/bebedouros/qrcode-modal";
 
 type Sink = RouterOutputs["sink"]["list"]["table"][number];
 
@@ -45,6 +46,18 @@ export function SinkDataTable({ data }: SinkDataTableProps) {
     useTableColumnVisibility("bebedouros");
   const [rowSelection, setRowSelection] = useState({});
   const [globalFilter, setGlobalFilter] = useState("");
+  const [selectedSink, setSelectedSink] = useState<Sink | null>(null);
+  const [isQrCodeModalOpen, setIsQrCodeModalOpen] = useState(false);
+
+  const handleViewQrCode = (sink: Sink) => {
+    setSelectedSink(sink);
+    setIsQrCodeModalOpen(true);
+  };
+
+  const columns = useMemo(
+    () => createColumns({ onViewQrCode: handleViewQrCode }),
+    []
+  );
 
   const table = useReactTable({
     data,
@@ -161,7 +174,7 @@ export function SinkDataTable({ data }: SinkDataTableProps) {
             ) : (
               <TableRow>
                 <TableCell
-                  colSpan={columns.length}
+                  colSpan={table.getAllColumns().length}
                   className="h-24 text-center"
                 >
                   Nenhum resultado encontrado.
@@ -200,6 +213,15 @@ export function SinkDataTable({ data }: SinkDataTableProps) {
           </Button>
         </div>
       </div>
+      {selectedSink && (
+        <QrCodeModal
+          open={isQrCodeModalOpen}
+          onOpenChange={setIsQrCodeModalOpen}
+          sinkId={selectedSink.id}
+          sinkName={selectedSink.name}
+          sinkLocation={selectedSink.location}
+        />
+      )}
     </div>
   );
 }
