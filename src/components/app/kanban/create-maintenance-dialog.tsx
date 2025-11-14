@@ -42,6 +42,7 @@ import {
 } from "~/utils/mocks/maintenance-mock-data";
 import type { MaintenanceCard } from "~/utils/types/maintenance-kanban";
 import { MaintenanceStatus } from "~/utils/types/maintenance-kanban";
+import { useCreateMantaince } from "~/hooks/components/create-mantaince";
 
 interface CreateMaintenanceDialogProps {
   onMaintenanceCreated: (maintenance: MaintenanceCard) => void;
@@ -51,6 +52,8 @@ export function CreateMaintenanceDialog({
   onMaintenanceCreated,
 }: CreateMaintenanceDialogProps) {
   const [open, setOpen] = useState(false);
+
+  const { sinksOptions, workersOptions } = useCreateMantaince();
 
   const form = useForm<CreateMaintenanceValidator>({
     resolver: zodResolver(createMaintenanceValidator),
@@ -127,9 +130,9 @@ export function CreateMaintenanceDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {mockSinksList.map((sink) => (
-                        <SelectItem key={sink.id} value={sink.id}>
-                          {sink.name} - {sink.location}
+                      {sinksOptions.map((sink) => (
+                        <SelectItem key={sink.value} value={sink.value}>
+                          {sink.label}
                         </SelectItem>
                       ))}
                     </SelectContent>
@@ -155,9 +158,12 @@ export function CreateMaintenanceDialog({
                       </SelectTrigger>
                     </FormControl>
                     <SelectContent>
-                      {mockResponsablesList.map((responsable) => (
-                        <SelectItem key={responsable.id} value={responsable.id}>
-                          {responsable.name}
+                      {workersOptions.map((responsable) => (
+                        <SelectItem
+                          key={responsable.value}
+                          value={responsable.value}
+                        >
+                          {responsable.label}
                         </SelectItem>
                       ))}
                     </SelectContent>

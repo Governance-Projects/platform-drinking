@@ -2,6 +2,8 @@ import { sinkRouter } from "~/server/api/routers/sink";
 import { createCallerFactory, createTRPCRouter } from "~/server/api/trpc";
 import { dashboardRouter } from "./routers/dahsboard";
 import { operationRouter } from "./routers/operation";
+import { usersRouters } from "./routers/user";
+import { maintanceRouter } from "./routers/maintance";
 
 /**
  * This is the primary router for your server.
@@ -12,6 +14,8 @@ export const appRouter = createTRPCRouter({
   sink: sinkRouter,
   dashboard: dashboardRouter,
   operation: operationRouter,
+  user: usersRouters,
+  maintance: maintanceRouter,
 });
 
 // export type definition of API
