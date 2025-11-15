@@ -48,7 +48,7 @@ export default function NovoBebedouroPage() {
   const submit: SubmitHandler<CreateSinkValidator> = (data) => {
     toast.promise(() => createSinkMutation.mutateAsync(data), {
       loading: "Carregando...",
-      success: `${data.name} Salvo com sucesso`,
+      success: `Salvo com sucesso`,
       error: "Ocorreu um erro ao registrar",
       id: "promise-toast",
     });

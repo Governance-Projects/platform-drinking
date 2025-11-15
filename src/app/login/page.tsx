@@ -1,5 +1,6 @@
 "use client";
 
+import { Suspense } from "react";
 import { useRouter, useSearchParams } from "next/navigation";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
@@ -28,7 +29,7 @@ import {
 import { useState } from "react";
 import { toast } from "sonner";
 
-export default function LoginPage() {
+function LoginForm() {
   const router = useRouter();
   const searchParams = useSearchParams();
   const [isLoading, setIsLoading] = useState(false);
@@ -141,5 +142,33 @@ export default function LoginPage() {
         </CardContent>
       </Card>
     </div>
+  );
+}
+
+function LoginPageFallback() {
+  return (
+    <div className="flex min-h-screen items-center justify-center bg-gradient-to-br from-slate-50 to-slate-100 p-4 dark:from-slate-950 dark:to-slate-900">
+      <Card className="w-full max-w-md">
+        <CardHeader className="space-y-1">
+          <CardTitle className="text-2xl font-bold">Login</CardTitle>
+          <CardDescription>Carregando...</CardDescription>
+        </CardHeader>
+        <CardContent>
+          <div className="space-y-4">
+            <div className="bg-muted h-10 w-full animate-pulse rounded-md" />
+            <div className="bg-muted h-10 w-full animate-pulse rounded-md" />
+            <div className="bg-muted h-10 w-full animate-pulse rounded-md" />
+          </div>
+        </CardContent>
+      </Card>
+    </div>
+  );
+}
+
+export default function LoginPage() {
+  return (
+    <Suspense fallback={<LoginPageFallback />}>
+      <LoginForm />
+    </Suspense>
   );
 }

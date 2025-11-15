@@ -13,13 +13,11 @@ describe("Must render the create sink page", () => {
   });
 
   it("should be able to create an sink", () => {
-    const sinkName = "Bebedouro A";
-
     cy.get("@name-input").type("Bebedouro A");
     cy.get("@location-input").type("Localização A");
     cy.get("@description-input").type("Descricao A");
     cy.get("@submit-button").click();
-    cy.contains(`${sinkName} Salvo com sucesso`);
+    cy.contains(`Salvo com sucesso`);
   });
 
   it("should show errors message on name input", () => {

@@ -11,4 +11,10 @@ export const maintanceRouter = {
         },
       });
     }),
+
+  services: protectedProcedure.query(async ({ ctx }) => {
+    const services = await ctx.db.sinkMaintanceService.findMany();
+
+    return services;
+  }),
 };

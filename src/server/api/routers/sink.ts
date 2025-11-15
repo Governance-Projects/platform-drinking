@@ -1,5 +1,9 @@
 import z from "zod";
-import { createTRPCRouter, protectedProcedure, publicProcedure } from "~/server/api/trpc";
+import {
+  createTRPCRouter,
+  protectedProcedure,
+  publicProcedure,
+} from "~/server/api/trpc";
 import { createSinkValidator } from "~/utils/validators/sink/create-sink";
 import { createFeedbackValidator } from "~/utils/validators/sink/create-feedback";
 
@@ -86,8 +90,8 @@ export const sinkRouter = createTRPCRouter({
           type: input.type,
           message: input.message,
           rating: input.rating,
-          name: input.name || null,
-          email: input.email || null,
+          name: input.name ?? null,
+          email: input.email ?? null,
         },
       });
 
