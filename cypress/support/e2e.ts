@@ -14,21 +14,18 @@
 // ***********************************************************
 
 // Import commands.js using ES2015 syntax:
-import './commands'
+import "./commands";
 
 // Login global com sessão para otimizar os testes
 beforeEach(() => {
   // Não faz login se o teste estiver no arquivo de login
   const specName = Cypress.spec.name;
-  if (!specName.includes('login.cy.ts')) {
-    const email = 'admin@unifapce.edu.br';
-    const password = 'Teste123!';
-    
-    cy.session(
-      `login-${email}`,
-      () => {
-        cy.login(email, password);
-      }
-    );
+  if (!specName.includes("login.cy.ts")) {
+    const email = "rianlandim@unifapce.com.br";
+    const password = "teste123!";
+
+    cy.session(`login-${email}`, () => {
+      cy.login(email, password);
+    });
   }
 });

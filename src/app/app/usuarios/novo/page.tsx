@@ -100,7 +100,11 @@ export default function NovoUsuarioPage() {
           </CardHeader>
 
           <CardContent>
-            <form onSubmit={form.handleSubmit(submit)} className="space-y-6">
+            <form
+              onSubmit={form.handleSubmit(submit)}
+              className="space-y-6"
+              noValidate
+            >
               <Form {...form}>
                 <FormField
                   control={form.control}

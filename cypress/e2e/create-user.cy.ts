@@ -34,7 +34,7 @@ describe("Must render the create user page", () => {
   it("should show error message on email input when empty", () => {
     cy.get("@name-input").type("Usuário Teste");
     cy.get("@submit-button").click();
-    cy.contains("Email é obrigatório");
+    cy.contains("Email inválido");
   });
 
   it("should show error message on email input when invalid", () => {

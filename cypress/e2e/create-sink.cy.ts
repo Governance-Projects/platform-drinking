@@ -1,7 +1,7 @@
 describe("Must render the create sink page", () => {
   beforeEach(() => {
     // Faz login antes de cada teste
-    cy.login("rianlandim@unifapce.edu.br", "Teste123!");
+    cy.login("rianlandim@unifapce.com.br", "teste123!");
 
     cy.visit("http://localhost:3000/app/bebedouros/novo");
 

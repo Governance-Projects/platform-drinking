@@ -27,7 +27,6 @@ import {
 } from "~/components/ui/card";
 import { useState } from "react";
 import { toast } from "sonner";
-import { env } from "~/env";
 
 export default function LoginPage() {
   const router = useRouter();
@@ -162,7 +161,7 @@ export default function LoginPage() {
                 Entrar
               </Button>
 
-              {env.NODE_ENV === "development" && (
+              {process.env.NODE_ENV === "development" && (
                 <Button
                   type="button"
                   className="w-full"

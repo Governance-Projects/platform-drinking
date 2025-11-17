@@ -29,7 +29,7 @@ describe("Must be able to do login", () => {
     cy.contains("label", "Email")
       .parent()
       .find('input[type="email"]')
-      .type("rianlandim@unifapce.edu.br");
+      .type("rianlandim@unifapce.com.br");
     cy.contains("button", "Entrar").click();
     cy.contains("Senha é obrigatória");
   });
