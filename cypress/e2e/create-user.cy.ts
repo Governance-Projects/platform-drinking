@@ -1,6 +1,6 @@
 describe("Must render the create user page", () => {
   beforeEach(() => {
-    cy.visit("http://localhost:3000/app/usuarios/novo");
+    cy.visit("/app/usuarios/novo");
 
     cy.get('[data-test="submit-button"]').as("submit-button");
     cy.get('[data-test="name-input"]').as("name-input");
@@ -91,7 +91,7 @@ describe("Must render the create user page", () => {
     cy.contains("Usuário criado com sucesso!");
 
     // Tentar criar outro com o mesmo email
-    cy.visit("http://localhost:3000/app/usuarios/novo");
+    cy.visit("/app/usuarios/novo");
     cy.get('[data-test="name-input"]').type("Usuário Teste 2");
     cy.get('[data-test="email-input"]').type(email);
     cy.get('[data-test="password-input"]').type("Senha123");
@@ -100,5 +100,3 @@ describe("Must render the create user page", () => {
     cy.contains("Email já cadastrado");
   });
 });
-
-

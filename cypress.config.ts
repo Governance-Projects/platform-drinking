@@ -8,8 +8,11 @@ export default defineConfig({
     },
   },
   e2e: {
-    baseUrl: "http://localhost:3000/",
+    baseUrl: "http://localhost:3000",
     defaultBrowser: "electron",
+    requestTimeout: 10000,
+    responseTimeout: 10000,
+    pageLoadTimeout: 10000,
     setupNodeEvents(_config) {
       // make the configuration
     },
