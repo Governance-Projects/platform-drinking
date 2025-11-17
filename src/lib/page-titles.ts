@@ -6,6 +6,8 @@ export const pageTitles: Record<string, string> = {
   "/app": "Dashboard",
   "/app/bebedouros": "Bebedouros",
   "/app/bebedouros/novo": "Novo Bebedouro",
+  "/app/usuarios": "Usuários",
+  "/app/usuarios/novo": "Novo Usuário",
   // Adicione mais rotas conforme necessário
 };
 

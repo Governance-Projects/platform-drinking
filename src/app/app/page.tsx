@@ -15,7 +15,6 @@ import { Button } from "~/components/ui/button";
 import Link from "next/link";
 import {
   MapPin,
-  Activity,
   AlertTriangle,
   CheckCircle,
   XCircle,
@@ -29,6 +28,7 @@ import type { StatCardProps } from "~/utils/types/stat-card-type";
 
 export default function DashboardPage() {
   const dashboardQuery = api.dashboard.list.useQuery();
+  const sinkQuery = api.sink.list.useQuery();
 
   const statCards: StatCardProps[] = [
     {
@@ -56,11 +56,11 @@ export default function DashboardPage() {
 
   const getStatusBadgeVariant = (status: string) => {
     switch (status) {
-      case "ATIVO":
+      case "ACTIVE":
         return "secondary";
-      case "MANUTENCAO":
+      case "MAINTANCE":
         return "outline";
-      case "INATIVO":
+      case "INACTIVE":
         return "destructive";
       default:
         return "default";
@@ -69,16 +69,39 @@ export default function DashboardPage() {
 
   const getStatusIcon = (status: string) => {
     switch (status) {
-      case "ATIVO":
+      case "ACTIVE":
         return <CheckCircle className="h-4 w-4 text-green-500" />;
-      case "MANUTENCAO":
+      case "MAINTANCE":
         return <Wrench className="h-4 w-4 text-yellow-500" />;
-      case "INATIVO":
+      case "INACTIVE":
         return <XCircle className="h-4 w-4 text-red-500" />;
       default:
         return null;
     }
   };
+
+  const getStatusLabel = (status: string) => {
+    switch (status) {
+      case "ACTIVE":
+        return "Ativo";
+      case "MAINTANCE":
+        return "Manutenção";
+      case "INACTIVE":
+        return "Inativo";
+      default:
+        return status;
+    }
+  };
+
+  const recentSinks = sinkQuery.data?.table
+    ? [...sinkQuery.data.table]
+        .sort((a, b) => {
+          return (
+            new Date(b.createdAt).getTime() - new Date(a.createdAt).getTime()
+          );
+        })
+        .slice(0, 5)
+    : [];
 
   const formatDate = (date: Date) => {
     return new Intl.DateTimeFormat("pt-BR", {
@@ -135,123 +158,63 @@ export default function DashboardPage() {
 
         <ChartAreaInteractive />
 
-        <div className="grid gap-6 lg:grid-cols-2">
-          {/* Status Distribution */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Activity className="h-5 w-5" />
-                Distribuição por Status
-              </CardTitle>
-              <CardDescription>
-                Status atual dos bebedouros no sistema
-              </CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {false ? (
-                <div className="space-y-3">
-                  <div className="bg-muted h-4 animate-pulse rounded" />
-                  <div className="bg-muted h-4 animate-pulse rounded" />
-                  <div className="bg-muted h-4 animate-pulse rounded" />
-                </div>
-              ) : (
-                <>
+        {/* Recent Bebedouros */}
+        <Card>
+          <CardHeader>
+            <CardTitle className="flex items-center gap-2">
+              <Calendar className="h-5 w-5" />
+              Bebedouros Recentes
+            </CardTitle>
+            <CardDescription>Últimos bebedouros adicionados</CardDescription>
+          </CardHeader>
+          <CardContent className="space-y-4">
+            {sinkQuery.isLoading ? (
+              <div className="space-y-3">
+                {Array.from({ length: 3 }).map((_, i) => (
+                  <div key={i} className="space-y-2">
+                    <div className="bg-muted h-4 animate-pulse rounded" />
+                    <div className="bg-muted h-3 w-2/3 animate-pulse rounded" />
+                  </div>
+                ))}
+              </div>
+            ) : recentSinks.length > 0 ? (
+              recentSinks.map((bebedouro) => (
+                <div key={bebedouro.id} className="space-y-2">
                   <div className="flex items-center justify-between">
                     <div className="flex items-center gap-2">
-                      <CheckCircle className="h-4 w-4 text-green-500" />
-                      <span className="text-sm">Ativos</span>
+                      {getStatusIcon(bebedouro.status)}
+                      <span className="text-sm font-medium">
+                        {bebedouro.name}
+                      </span>
                     </div>
-                    <Badge variant="secondary">{0}</Badge>
+                    <Badge variant={getStatusBadgeVariant(bebedouro.status)}>
+                      {getStatusLabel(bebedouro.status)}
+                    </Badge>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <Wrench className="h-4 w-4 text-yellow-500" />
-                      <span className="text-sm">Em Manutenção</span>
-                    </div>
-                    <Badge variant="outline">{0}</Badge>
+                  <div className="text-muted-foreground flex items-center justify-between text-xs">
+                    <span className="flex items-center gap-1">
+                      <MapPin className="h-3 w-3" />
+                      {bebedouro.location}
+                    </span>
+                    <span>{formatDate(bebedouro.createdAt)}</span>
                   </div>
-                  <div className="flex items-center justify-between">
-                    <div className="flex items-center gap-2">
-                      <XCircle className="h-4 w-4 text-red-500" />
-                      <span className="text-sm">Inativos</span>
-                    </div>
-                    <Badge variant="destructive">{0}</Badge>
-                  </div>
-                </>
-              )}
-            </CardContent>
-          </Card>
-
-          {/* Recent Bebedouros */}
-          <Card>
-            <CardHeader>
-              <CardTitle className="flex items-center gap-2">
-                <Calendar className="h-5 w-5" />
-                Bebedouros Recentes
-              </CardTitle>
-              <CardDescription>Últimos bebedouros adicionados</CardDescription>
-            </CardHeader>
-            <CardContent className="space-y-4">
-              {false ? (
-                <div className="space-y-3">
-                  {Array.from({ length: 3 }).map((_, i) => (
-                    <div key={i} className="space-y-2">
-                      <div className="bg-muted h-4 animate-pulse rounded" />
-                      <div className="bg-muted h-3 w-2/3 animate-pulse rounded" />
-                    </div>
-                  ))}
                 </div>
-              ) : false ? (
-                [
-                  {
-                    id: "1",
-                    status: "CLOSED",
-                    nome: "Teste",
-                    localizacao: "Teste",
-                    createdAt: new Date(),
-                  },
-                ]
-                  .slice(0, 5)
-                  .map((bebedouro) => (
-                    <div key={bebedouro.id} className="space-y-2">
-                      <div className="flex items-center justify-between">
-                        <div className="flex items-center gap-2">
-                          {getStatusIcon(bebedouro.status)}
-                          <span className="text-sm font-medium">
-                            {bebedouro.nome}
-                          </span>
-                        </div>
-                        <Badge
-                          variant={getStatusBadgeVariant(bebedouro.status)}
-                        >
-                          {bebedouro.status}
-                        </Badge>
-                      </div>
-                      <div className="text-muted-foreground flex items-center justify-between text-xs">
-                        <span className="flex items-center gap-1">
-                          <MapPin className="h-3 w-3" />
-                          {bebedouro.localizacao}
-                        </span>
-                        <span>{formatDate(bebedouro.createdAt)}</span>
-                      </div>
-                    </div>
-                  ))
-              ) : (
-                <div className="py-6 text-center">
-                  <AlertTriangle className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
-                  <p className="text-muted-foreground text-sm">
-                    Nenhum bebedouro encontrado
-                  </p>
-                  <Button asChild className="mt-2" size="sm">
-                    <Link href="/app/bebedouros/novo">
-                      Adicionar Primeiro Bebedouro
-                    </Link>
-                  </Button>
-                </div>
-              )}
-            </CardContent>
-          </Card>
-        </div>
+              ))
+            ) : (
+              <div className="py-6 text-center">
+                <AlertTriangle className="text-muted-foreground mx-auto mb-2 h-8 w-8" />
+                <p className="text-muted-foreground text-sm">
+                  Nenhum bebedouro encontrado
+                </p>
+                <Button asChild className="mt-2" size="sm">
+                  <Link href="/app/bebedouros/novo">
+                    Adicionar Primeiro Bebedouro
+                  </Link>
+                </Button>
+              </div>
+            )}
+          </CardContent>
+        </Card>
       </div>
     </div>
   );
