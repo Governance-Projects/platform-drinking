@@ -56,7 +56,7 @@ export function UserDataTable({ data }: UserDataTableProps) {
     boolean | undefined
   >(undefined);
 
-  const columns = useMemo(() => createColumns({}), []);
+  const columns = useMemo(() => createColumns(undefined), []);
 
   const table = useReactTable({
     data,
@@ -115,8 +115,8 @@ export function UserDataTable({ data }: UserDataTableProps) {
             emailVerifiedFilter === undefined
               ? "all"
               : emailVerifiedFilter
-              ? "verified"
-              : "not-verified"
+                ? "verified"
+                : "not-verified"
           }
           onValueChange={(value) => {
             if (value === "all") {
@@ -220,8 +220,7 @@ export function UserDataTable({ data }: UserDataTableProps) {
       </div>
       <div className="flex items-center justify-end space-x-2 py-4">
         <div className="text-muted-foreground flex-1 text-sm">
-          {table.getFilteredRowModel().rows.length} de {data.length}{" "}
-          usuário(s)
+          {table.getFilteredRowModel().rows.length} de {data.length} usuário(s)
           {table.getFilteredSelectedRowModel().rows.length > 0 && (
             <span className="ml-2">
               ({table.getFilteredSelectedRowModel().rows.length} selecionado(s))
@@ -250,4 +249,3 @@ export function UserDataTable({ data }: UserDataTableProps) {
     </div>
   );
 }
-

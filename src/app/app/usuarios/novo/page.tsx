@@ -31,7 +31,6 @@ import {
   FormLabel,
   FormMessage,
 } from "~/components/ui/form";
-import { useQueryClient } from "@tanstack/react-query";
 
 export default function NovoUsuarioPage() {
   const router = useRouter();

@@ -15,9 +15,7 @@ type User = RouterOutputs["user"]["listOperationalUsers"]["table"][number];
 
 const columnHelper = createColumnHelper<User>();
 
-type ColumnsProps = {
-  // Pode adicionar callbacks de ações aqui no futuro
-};
+type ColumnsProps = undefined;
 
 const formatDate = (date: Date | string | null) => {
   if (!date) return "Nunca";
@@ -30,7 +28,7 @@ const formatDate = (date: Date | string | null) => {
   });
 };
 
-export const createColumns = ({}: ColumnsProps = {}) => [
+export const createColumns = (props: ColumnsProps) => [
   columnHelper.accessor("name", {
     header: "Nome",
     cell: (info) => (
@@ -123,5 +121,3 @@ export const createColumns = ({}: ColumnsProps = {}) => [
     },
   }),
 ];
-
-

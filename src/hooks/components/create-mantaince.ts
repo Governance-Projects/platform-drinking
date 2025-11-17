@@ -6,7 +6,7 @@ export function useCreateMantaince() {
   const sinksQuery = api.sink.list.useQuery();
 
   const workersOptions = useMemo(() => {
-    const workers = workersUsersQuery.data?.map((item) => ({
+    const workers = workersUsersQuery.data?.table?.map((item) => ({
       label: item.name,
       value: item.id,
     }));
