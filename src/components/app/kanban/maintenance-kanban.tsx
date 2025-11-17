@@ -2,6 +2,7 @@
 
 import { useState, useCallback, useEffect } from "react";
 import { monitorForElements } from "@atlaskit/pragmatic-drag-and-drop/element/adapter";
+import { toast } from "sonner";
 import { MaintenanceStatus } from "~/utils/types/maintenance-kanban";
 import type {
   MaintenanceCard,
@@ -31,6 +32,18 @@ const getInitialKanbanColumns = (): KanbanColumns => ({
 
 export function MaintenanceKanban() {
   const sinksMaintanceQuery = api.operation.list.useQuery();
+  const utils = api.useUtils();
+  const updateStatus = api.maintance.updateStatus.useMutation({
+    onSuccess: () => {
+      // Invalidar a query para atualizar os dados do servidor
+      void utils.operation.list.invalidate();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao atualizar status da manutenção");
+      // Reverter a query em caso de erro
+      void utils.operation.list.invalidate();
+    },
+  });
 
   const [columns, setColumns] = useState<KanbanColumns>(
     getInitialKanbanColumns,
@@ -63,6 +76,25 @@ export function MaintenanceKanban() {
           const sourceStatus = sourceData.status as MaintenanceStatus;
           const destinationStatus = destinationData.status as MaintenanceStatus;
 
+          // Se moveu para a mesma coluna, apenas reordena (por enquanto adiciona no final)
+          if (sourceStatus === destinationStatus) {
+            setColumns((prev) => {
+              const sourceColumn = prev[sourceStatus];
+              const card = sourceColumn.find((c) => c.id === cardId);
+              if (!card) return prev;
+
+              // Remove da posição atual
+              const newCards = sourceColumn.filter((c) => c.id !== cardId);
+              // Adiciona no final (pode ser melhorado para calcular posição exata)
+              return {
+                ...prev,
+                [sourceStatus]: [...newCards, card],
+              };
+            });
+            return;
+          }
+
+          // Se moveu para outra coluna, atualiza o status
           setColumns((prev) => {
             const sourceColumn = prev[sourceStatus];
             const destinationColumn = prev[destinationStatus];
@@ -71,18 +103,6 @@ export function MaintenanceKanban() {
             const card = sourceColumn.find((c) => c.id === cardId);
             if (!card) return prev;
 
-            // Se moveu para a mesma coluna, apenas reordena (por enquanto adiciona no final)
-            if (sourceStatus === destinationStatus) {
-              // Remove da posição atual
-              const newCards = sourceColumn.filter((c) => c.id !== cardId);
-              // Adiciona no final (pode ser melhorado para calcular posição exata)
-              return {
-                ...prev,
-                [sourceStatus]: [...newCards, card],
-              };
-            }
-
-            // Se moveu para outra coluna, atualiza o status
             // Remover da coluna origem
             const newSourceCards = sourceColumn.filter((c) => c.id !== cardId);
 
@@ -100,20 +120,21 @@ export function MaintenanceKanban() {
               [destinationStatus]: newDestinationCards,
             };
           });
+
+          // Atualizar o status no banco de dados
+          updateStatus.mutate({
+            id: cardId,
+            status: destinationStatus,
+          });
         }
       },
     });
-  }, []);
+  }, [updateStatus]);
 
-  const handleMaintenanceCreated = useCallback(
-    (maintenance: MaintenanceCard) => {
-      setColumns((prev) => ({
-        ...prev,
-        [maintenance.status]: [...prev[maintenance.status], maintenance],
-      }));
-    },
-    [],
-  );
+  const handleMaintenanceCreated = useCallback(() => {
+    // A query será invalidada automaticamente após criar a manutenção
+    void utils.operation.list.invalidate();
+  }, [utils]);
 
   return (
     <div className="h-full w-full">

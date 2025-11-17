@@ -10,6 +10,7 @@ export default defineConfig({
   e2e: {
     baseUrl: "http://localhost:3000",
     defaultBrowser: "electron",
+    defaultCommandTimeout: 8000,
     requestTimeout: 10000,
     responseTimeout: 10000,
     pageLoadTimeout: 10000,

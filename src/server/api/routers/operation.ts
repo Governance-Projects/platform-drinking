@@ -29,18 +29,30 @@ export const operationRouter = {
         },
       });
 
-      const mappedSinks: MaintenanceCard[] = sinks.map((item) => ({
-        id: item.id,
-        sinkId: item.sink.id,
-        sinkName: item.sink.name,
-        location: item.sink.location,
-        responsableId: item.responsableId,
-        responsableName: item.responsable.name,
-        observations: item.observations ?? "",
-        status: item.status as MaintenanceStatus,
-        createdAt: item.createdAt,
-        updatedAt: item.updatedAt,
-      }));
+      const mappedSinks: MaintenanceCard[] = sinks.map((item) => {
+        // Converter SinkMaintanceStatus do Prisma para MaintenanceStatus do TypeScript
+        let status: MaintenanceStatus;
+        if (item.status === "CONCLUDED") {
+          status = MaintenanceStatus.COMPLETED;
+        } else if (item.status === "IN_PROGRESS") {
+          status = MaintenanceStatus.IN_PROGRESS;
+        } else {
+          status = MaintenanceStatus.PENDING;
+        }
+
+        return {
+          id: item.id,
+          sinkId: item.sink.id,
+          sinkName: item.sink.name,
+          location: item.sink.location,
+          responsableId: item.responsableId,
+          responsableName: item.responsable.name,
+          observations: item.observations ?? "",
+          status,
+          createdAt: item.createdAt,
+          updatedAt: item.updatedAt,
+        };
+      });
 
       const groupedByStatus = mappedSinks.reduce(
         (acc, card) => {

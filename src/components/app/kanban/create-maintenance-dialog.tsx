@@ -36,16 +36,11 @@ import {
   createMaintenanceValidator,
   type CreateMaintenanceValidator,
 } from "~/utils/validators/maintenance/create-maintenance";
-import {
-  mockSinksList,
-  mockResponsablesList,
-} from "~/utils/mocks/maintenance-mock-data";
-import type { MaintenanceCard } from "~/utils/types/maintenance-kanban";
-import { MaintenanceStatus } from "~/utils/types/maintenance-kanban";
 import { useCreateMantaince } from "~/hooks/components/create-mantaince";
+import { api } from "~/trpc/react";
 
 interface CreateMaintenanceDialogProps {
-  onMaintenanceCreated: (maintenance: MaintenanceCard) => void;
+  onMaintenanceCreated?: () => void;
 }
 
 export function CreateMaintenanceDialog({
@@ -54,6 +49,7 @@ export function CreateMaintenanceDialog({
   const [open, setOpen] = useState(false);
 
   const { sinksOptions, workersOptions } = useCreateMantaince();
+  const utils = api.useUtils();
 
   const form = useForm<CreateMaintenanceValidator>({
     resolver: zodResolver(createMaintenanceValidator),
@@ -64,36 +60,22 @@ export function CreateMaintenanceDialog({
     },
   });
 
+  const createMaintenance = api.maintance.create.useMutation({
+    onSuccess: () => {
+      toast.success("Manutenção criada com sucesso!");
+      form.reset();
+      setOpen(false);
+      // Invalidar a query para atualizar o kanban
+      void utils.operation.list.invalidate();
+      onMaintenanceCreated?.();
+    },
+    onError: (error) => {
+      toast.error(error.message || "Erro ao criar manutenção");
+    },
+  });
+
   const submit: SubmitHandler<CreateMaintenanceValidator> = (data) => {
-    // Buscar dados do bebedouro e responsável selecionados
-    const sink = mockSinksList.find((s) => s.id === data.sinkId);
-    const responsable = mockResponsablesList.find(
-      (r) => r.id === data.responsableId,
-    );
-
-    if (!sink || !responsable) {
-      toast.error("Erro ao criar manutenção. Dados inválidos.");
-      return;
-    }
-
-    // Criar nova manutenção
-    const newMaintenance: MaintenanceCard = {
-      id: `maint-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-      sinkId: data.sinkId,
-      sinkName: sink.name,
-      location: sink.location,
-      responsableId: data.responsableId,
-      responsableName: responsable.name,
-      observations: data.observations,
-      status: MaintenanceStatus.PENDING,
-      createdAt: new Date(),
-      updatedAt: new Date(),
-    };
-
-    onMaintenanceCreated(newMaintenance);
-    form.reset();
-    setOpen(false);
-    toast.success("Manutenção criada com sucesso!");
+    createMaintenance.mutate(data);
   };
 
   return (
@@ -120,10 +102,7 @@ export function CreateMaintenanceDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Bebedouro</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione um bebedouro" />
@@ -148,10 +127,7 @@ export function CreateMaintenanceDialog({
               render={({ field }) => (
                 <FormItem>
                   <FormLabel>Responsável</FormLabel>
-                  <Select
-                    onValueChange={field.onChange}
-                    defaultValue={field.value}
-                  >
+                  <Select onValueChange={field.onChange} value={field.value}>
                     <FormControl>
                       <SelectTrigger>
                         <SelectValue placeholder="Selecione um responsável" />
